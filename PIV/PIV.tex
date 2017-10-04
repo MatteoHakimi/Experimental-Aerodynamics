@@ -1,0 +1,983 @@
+\documentclass{article} % A4 paper and 11pt font size
+\usepackage[export]{adjustbox}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[italian]{babel}
+\usepackage{booktabs}
+\usepackage{cleveref}
+\usepackage{epstopdf}
+\usepackage[cm]{fullpage}
+\usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{subcaption}
+\usepackage{subfig}
+\usepackage{units}
+
+
+\onehalfspacing
+\graphicspath{{./images/}}
+
+\title{\huge Particle Image Velocimetry}
+\author{Fabio Alfano, Luca Candela,\\Stefano Gambuzza, Matteo Hakimi}
+\date{}
+
+\newcommand{\xd}{\nicefrac{\textrm{x}}{\textrm{D}}\ }
+\newcommand{\yd}{\nicefrac{\textrm{y}}{\textrm{D}}\ }
+
+\begin{document}
+\maketitle
+%\begin{figure}[hb!]
+%	\centering
+%\includegraphics[scale=0.6]{logosapienza}
+%\end{figure}
+
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Introduzione}
+Si vuole misurare il campo di velocità di un getto libero uscente da un condotto a sezione circolare di  diametro $D = 6$ mm e lunghezza $L = 700$ mm, al variare della pressione a monte del condotto. Tutte le misure saranno effettuate mediante analisi PIV.\par
+Le misurazioni sono state svolte in due giornate, delle quali la prima è stata dedicata all'individuazione dei parametri ottimali di funzionamento della PIV, e la seconda è stata utilizzata per l'acquisizione dei dati significativi sul getto liibero. Particolare attenzione sarà dedicata alle fasi di pre- e post-processing delle immagini.
+
+\section{Cenni Teorici}
+La PIV è una tecnica di acquisizione del campo di velocità di un flusso estremamente avanzata, in quanto consente di determinare istantaneamente tutto il campo di velocità in maniera minimamente intrusiva. La misura del campo di velocità è ottenuta correlando tra due fotogrammi successivi la posizione di alcune particelle di tracciante immesse nel campo. Quest'ultime devono essere sufficientemente grandi da poter essere osservate e distinte singolarmente, ma non troppo da modificare il campo di velocità circostante, comportando quindi la necessità di un compromesso.\par
+% tabella particelle traccianti e caratteristiche da foto %
+Un ulteriore compromesso sarà necessario per determinare il $\Delta t$ tra due successive fotografie: valori troppo piccoli di questo intervallo potrebbero non far apprezzare il movimento di una particella tra un fotogramma ed il successivo, mentre valori troppo elevati possono far perdere delle particelle che si sono spostate dal piano della messa a fuoco dell'obiettivo. Inoltre, con un elevato $\Delta t$, il valore di velocità restituito si discosta da quello istantaneo, dato che la PIV calcola la velocità media di una particella tra due fotogrammi.\par
+Anche sulla quantità di tracciate immessa si dovrà trovare un equilibrio: poche particelle non consentiranno una correlazione tra immagini successive sufficientemente alta, mentre troppe particelle potrebbero modificare il campo di velocità in maniera elevata, oltre a poter formare agglomerati indesiderati.\par
+Il sistema PIV determina la velocità locale dividendo un fotogramma in zone di interrogazione di piccole dimensioni rispetto all'immagine. Mediante correlazione incrociata con il fotogramma successivo, si determina lo spostamento della zona di interrogazione. Il calcolo del vettore velocità è effettuato tenendo conto del ritardo tra le due illuminazioni. Il processo di interrogazione viene ripetuto per tutte le aree dell'acquisizione PIV e per tutto il numero dei \textit{frame} acquisiti.\par
+Con finestre di interrogazione troppo grandi il campo di velocità ottenuta risulta molto differente da quello reale, essendo costante su ogni singola finestra. Celle più piccole consentono un calcolo del campo più accurato, con un costo computazionale più elevato.
+% La risoluzione spaziale di un'immagine è determinata dal vertice di angolo $\alpha$ del cono di luce generato dall'apertura della fotocamera $f$ e la lunghezza d'onda dell'illuminazione, dal criterio di Rayleigh $d_1\approx \frac{\lambda}{\alpha}$ per la risoluzione trasversale ed $d_2\approx \lambda\alpha^2$  
+La risoluzione temporale sarà invece determinata dal $\Delta t$ tra i singoli fotogrammi. Un valore troppo elevato comporta gli stessi errori causati da celle di interrogazione troppo grandi, mentre un $\Delta t$ troppo piccolo può non essere possibile per le limitazioni dell'obiettivo.
+% La profondità di campo è ottimizzata per ottenere immagini nitide. Quest'ultima è un parametro importante in quanto se richiesta una ampia profondità di campo di conseguenza dovrà essere aumentata f con una conseguente diminuzione della risoluzione. Le caratteristiche citate sono dei parametri da considerare quando quando si stima la gamma dinamica di un sistema di misurazione di flusso. 
+
+\section{Strumentazione}
+La strumentazione, oltre all'apparato per l'emissione del flusso, consiste in un obiettivo collegato ad una fotocamera per acquisire le immagini da processare, un sistema di illuminazione laser ed un clock digitale per sincronizzare le accensioni del laser e le acquisizioni dalla fotocamera. La fotocamera è dotata di un sensore CCD e acquisisce immagini con risoluzione 1392x1040 px. Il sistema di illuminazione consiste di due laser distinti Nd:YAG che producono 0.3 J per impulso con durata 10 ns in grado di produrre luce monocromatica. I due laser distinti hanno consentito l'utilizzo di diversi $\Delta t$, in modo da verificare come diversi \textit{frame rate} hanno effetto sulle misurazioni. Il clock digitale è stato necessario, vista la breve durata degli impulsi luminosi. I canali del clock utilizzati sono:
+\begin{itemize} \itemsep0em
+	\item C: LAMP IN laser 1 (inizio dell'irraggiamento di fotoni sul materiale attivo, laser 1)
+	\item D: Q-SWITCH IN laser 1 (generazione dell'impulso, laser 1)
+	\item E: LAMP IN laser 2
+	\item F: Q-SWITCH IN laser 2
+	\item G: CAMERA (scatto della fotocamera)
+\end{itemize}
+I tempi impostati per questi canali saranno riportati per ogni singola prova. Il $\Delta t$ per ogni prova è determinato dalla differenza tra il valore del clock nel canale E e quello nel canale C, ovvero dalla differenza tra le accensioni dei due laser.
+
+\section{Elaborazione delle immagini}
+Le immagini ottenute dalla fotocamera sono state processate prima di essere analizzate, allo scopo di ottenere file più semplici da elaborare per il software. A seguito della processazione delle immagini, si è dovuto operare sui campi di velocità ottenuti per rimuovere errori evidenti del software (vettori spuri) e per ricavare i campi di grandezze derivate (come la vorticità). La processazione delle immagini ha riguardato soprattutto quelle ottenute per l'ultima giornata.\par
+Tutte le immagini ottenute sono in bianco e nero. Per questo motivo, invece che sui singoli canali di rosso, verde e blu che costituiscono l'immagine, si opera direttamente sul canale di luminosità.
+\subsection{Pre-processing}
+Alla fase di acquisizione è seguito il \textit{pre-processing}, che consiste nel migliorare la qualità delle immagini attraverso l'applicazione di alcuni accorgimenti e l'uso di filtri per aumentarne la nitidezza.\par
+Questa risulta essere una delle fasi essenziali nella \textit{image analisys}, poiché permette di eliminare e correggere (almeno parzialmente) effetti indesiderati quali rumore di fondo o distribuzione non omogenea del tracciante, che danno origine a fenomeni di riflessione locali intensi rispetto al flusso circostante. Nelle immagini \textit{raw}, ovvero non elaborate, direttamente provenienti dalla fotocamera, può essere presente infatti troppo rumore, o il livello di luminosità dei pixel contenenti tracciante può essere troppo simile a quello di sfondo, rendendo difficile l'individuazione delle singole particelle.\par
+Una delle tecniche di maggior impiego in questa fase è quella della sottrazione del minimo: si calcola, per ogni pixel in tutte le immagini, il minimo valore di luminosità, che viene poi sottratto a tutti i fotogrammi della sequenza. In questo modo si ottiene una generale riduzione del rumore di fondo e un moderato aumento della nitidezza dei fotogrammi stessi, rendendo quindi più semplice individuare le singole particelle di tracciante.\par
+Si riporta in \cref{fig:minimo} un'immagine prima e dopo la riduzione del minimo.
+\begin{figure}[h!]
+	\centering
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\linewidth]{particolare_non_filtrato}
+        \caption{Particolare, immagine \textit{raw}}
+    \end{subfigure}\qquad
+    \begin{subfigure}{0.45\textwidth}
+        \includegraphics[width=\linewidth]{particolare_filtro_minimo}   
+        \caption{Particolare, immagine filtrata con rimozione del minimo}     
+    \end{subfigure}
+    \caption{Rimozione del minimo}
+    \label{fig:minimo}  
+\end{figure}\par
+Si può osservare come si riduca la luminosità nella zona centrale del flusso, rendendo più semplice la distinzione tra diverse particelle.\par
+In alternativa alla sottrazione del minimo si può operare sullo spettro delle immagini in modo da aumentare le componenti a più alto numero d'onda. Il risultato che si ottiene è la presenza di puù marcate discontinuità nelle immagini, rendendole quindi più nitide. Il principale problema di questo procedimento è quello che viene amplificata la componente di rumore a più alto numero d'onda, potenzialmente rendendo peggiore la qualità delle immagini.
+\subsection{Processazione}
+A valle della fase di pre-processing effettuata, si è passato alla fase di processazione della sequenza di immagini ottenute dalle diverse configurazioni, effettuata in ambiente MATLAB utilizzando PIVlab.\par
+Dopo aver escluso le zone di non interesse attraverso l'uso delle funzioni di mask e di region of interest, al fine di diminuire i tempi di processazione, per ognuna delle prove sono stati scelti un determinato algoritmo di calcolo, una dimensione iniziale della finestra di interrogazione e un numero di passaggi di elaborazione, in funzione dei parametri delle singole prove.\par
+\subsection{Post-processing} 
+La fase di post-processing consiste nella validazione dei risultati ottenuti, eliminando i vettori spuri e interpolando linearmente o attraverso splines le zone del campo dove tali vettori sono stati rimossi. I vettori spuri vengono individuati misurando la loro differenza dal campo medio, e confrontandola con una certa soglia. Con una soglia troppo bassa, si avrebbe la rimozione di ampie regioni del campo di velocità sostituite da zone interpolate, più regolari del campo fisico, perdendo informazioni sulla turbolenza a piccole e medie scale. Per questo motivo si è cercato di mitigare le situazioni estreme scegliendo di rimuovere vettori discostati dal campo medio di più di 4$\sigma$, o in alcuni casi 5$\sigma$.
+ 
+\section{Calibrazione}
+Le misurazioni sono state svolte in due differenti giornate. Nella prima si è cercato di individuare i parametri ottimali di funzionamento per la PIV, in particolar modo per quanto riguarda la fotocamera utilizzata per l'acquisizione delle immagini. Nella seconda, invece, individuati i parametri ottimali, si è operato a modificare le proprietà del flusso analizzato operando sulla pressione a monte del condotto di immissione in camera. In maniera più schematica, il lavoro è stato suddiviso nelle seguenti prove:
+\begin{enumerate} \itemsep0em
+	\item Frame rate
+	\item Esposizione dell'obiettivo
+	\item Apertura dell'obiettivo
+	\item Variazione della velocità del getto
+\end{enumerate}\par
+Le prove effettuate sono state confrontate con una condizione di riferimento avente parametri riportati in tab.~\ref{tab:parametri_rif}, indicata come \textit{Prova 1} nei grafici.
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{@{}ccccccccc@{}}
+		\toprule
+		$p_{0}$ [bar] & C [$\mu$s] & D [$\mu$s] & E [$\mu$s] & F [$\mu$s] & G [$\mu$s] & $\Delta t$ [$\mu$s] & Esposizione [$\mu$s] & Diaframma [$f$/] \\ \midrule
+		1.1875 & 0.002000 & 0.002790 & 0.002055 & 0.0027955 & 0.002687 & 5.5 & 100 & 5.6 \\ \bottomrule
+		\end{tabular}
+	\caption{Parametri per la prova di riferimento}
+	\label{tab:parametri_rif}
+\end{table}\par
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{stability_piv_prova1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{stability_piv_prova8}
+		\caption{Prova 8}
+	\end{subfigure}
+	\caption{Media del modulo di velocità al variare del numero di campioni, \xd = 2, \yd = 0}
+	\label{fig:stabilita_piv}
+\end{figure}
+Durante le prove di calibrazione sono state acquisite 100 immagini per prova, contro le 500 ottenute nelle prove di velocità. Si osserva dai grafici riportati in \cref{fig:stabilita_piv} come con 100 fotogrammi non sia possibile ottenere un capo medio sufficientemente preciso, mentre 500 immagini consentono una precisione abbastanza elevata. Dal confronto con altri lavori (\cite{falchi09}) ci si potrà comunque aspettare un valore di rumore elevato dato il minor numero di fotogrammi acquisiti. 
+\subsection{Frame rate}
+Per apprezzare l'effetto della modifica del frame rate sono state svolte due misurazioni modificando il $\Delta t$ tra le due acquisizioni, agendo sui valori del clock nei canali E ed F, mantenendo immutati i valori nei canali relativi al primo dei due laser. In particolare si è operato con i parametri riportati in tab.~\ref{tab:parametri_fps}.\par
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{@{}cccccc@{}}\toprule
+		Prova & C [s] & E [s] & G [s] & $\Delta t$ [$\mu$s] & Framerate [fps] \\ \midrule
+		2 & 0.002000 & 0.002010 & 0.002687 & 10 & 100000 \\ \midrule
+		3 & 0.002000 & 0.002003 & 0.0026845 & 3 & 333333 \\ \bottomrule
+	\end{tabular}
+	\caption{Parametri per le prove 2 e 3, variazione del framerate}
+	\label{tab:parametri_fps}
+\end{table}
+Tutti i parametri non indicati in tabella non sono stati modificati dalla configurazione della prova 1. Si può notare come il ridotto $\Delta t$ abbia richiesto una modifica dell'istante di attivazione della fotocamera per la prova 3, mentre questo non è stato necessario per la prova 2. Un $\Delta t$ più piccolo comporta l'utilizzo di finestre di interrogazione ridotte, e quindi un miglioramento della risoluzione dei campi, pagandolo in consto computazionale.\par
+Nella \cref{fig:x_Unorm_123} sono riportati gli andamenti della componente \textit{u} normalizzata rispetto al suo valore massimo nella sezione di efflusso, in funzione dell'ascissa \xd. Si può osservare come una non corretta configurazione dell'apparato fotografico restituisca un campo di velocità nella zona centrale del getto maggiore di quella di efflusso. Tale comportamento è causato da una non corretta messa a fuoco in tutto il campo, con conseguente perdita di risoluzione nelle regioni periferiche come quella di efflusso.\par
+In \cref{fig:y_Unorm_123} si può osservare l'andamento della \textit{u} con la direzione della componente trasversale. Anche in questo caso si possono osservare risultati inattesi, ovvero velocità diversa da zero all'esterno del getto e velocità massima normalizzata superiore all'unità, per gli stessi motivi già menzionati.\par 
+Nelle successive figure sono rappresentate le statistiche riguardanti campo medio (\cref{fig:MEAN_U_123}) e deviazione standard (\cref{fig:STD_U_123}). In \cref{fig:MEAN_U_123} si prende immediatamente visione delle considerazioni fatte precedentemente per quanto riguarda le velocità in direzione x, in special modo in prossimità della sezione di efflusso di prova 1 e prova 2, dove il campo medio risulta essere non attendibile, confermando i risultati di deviazione standard in \cref{fig:STD_U_123}.\par
+Si osserva dai grafici come il valore di $\Delta t$ = 3 $\mu$s sia ottimale, in quanto sufficientemente ridotto da consentire una elevata risoluzione spaziale del campo medio, ma non troppo ridotta comportare un costo computazionale troppo elevato. Si manterrà quindi un valore ridotto del $\Delta t$ in tutte le prove di variazione di velocità.
+\begin{figure}[b!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_umean_vs_x.pdf}
+		\label{fig:x_Unorm_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova2/prova2_umean_vs_x.pdf}
+		\label{fig:x_Unorm_2}
+		\caption{Prova 2}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova3/prova3_umean_vs_x.pdf}
+		\label{fig:x_Unorm_3}
+		\caption{Prova 3}
+	\end{subfigure}  
+    	\caption{$\nicefrac{u}{U_0}$(x) sulla centerline (\yd = 0)}
+	\label{fig:x_Unorm_123}
+\end{figure}
+\begin{figure}[b!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_umean_vs_y.pdf}
+		\label{fig:y_Unorm_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova2/prova2_umean_vs_y.pdf}
+		\label{fig:y_Unorm_2}
+		\caption{Prova 2}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova3/prova3_umean_vs_y.pdf}
+		\label{fig:y_Unorm_3}
+		\caption{Prova 3}
+	\end{subfigure}  
+	\caption{$\nicefrac{u}{U_0}$(y) a diversi \xd}
+      \label{fig:y_Unorm_123}
+\end{figure}
+\clearpage
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_contour_mean_u.pdf}
+		\label{fig:MEAN_U_1}
+		\caption{Prova 1}
+	\end{subfigure} 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova2/prova2_contour_mean_u.pdf}
+		\label{fig:MEAN_U_2}
+		\caption{Prova 2}		
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova3/prova3_contour_mean_u.pdf}
+		\label{fig:MEAN_U_3}
+		\caption{Prova 3}
+	\end{subfigure}  
+      \caption{$\nicefrac{u}{U_0}$(x, y), campo medio}
+      \label{fig:MEAN_U_123}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_contour_std_u.pdf}
+		\caption{Prova 1}
+		\label{fig:STD_U_1}
+	\end{subfigure} 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova2/prova2_contour_std_u.pdf}
+		\caption{Prova 2}
+		\label{fig:STD_U_2}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova3/prova3_contour_std_u.pdf}
+		\caption{Prova 3}
+		\label{fig:STD_U_3}
+	\end{subfigure}
+      \caption{$\sigma_u$(x, y)}
+      \label{fig:STD_U_123}
+\end{figure}
+\clearpage
+\subsection{Esposizione dell'obiettivo}
+Le prove 4 e 5 sono state svolte mantenendo il $\Delta t$ della prima prova e variando il tempo di esposizione alla luce del sensore fotografico. Nella prova 4 quest'ultimo è stato ridotto a 10 $\mu$s  comportando una variazione del parametro G (portato a 0.002777 s) e nella 5 è stato aumentato a 200 $\mu$s portando G a 0.0025845 s. Si vuole verificare se l'elevata esposizione della prova 5 sia eccessiva o meno, e se questo possa comportare ambiguità tra particelle vicine. Questo può causare la presenza di strisciature sui fotogrammi causate dall'apertura eccessiva dell'otturatore e quindi aumento dei vettori spuri. Al contrario nella prova 4 è attesa una leggera sottoesposizione, e si vuole verificare se questo consente ancora una accurata risoluzione delle singole particelle.\par 
+% Nelle \cref{fig:x_Unorm_45} e \cref{fig:y_Unorm_45} si osserva un miglioramento della rappresentazione del flusso alla sezione iniziale. Questo avviene in special modo nella Prova 4 di Figura 7 ma comunque risultano ancora poco attendibili come confermato dall'analisi della deviazione standard di figura 8.\par
+Si nota come al variare del tempo di esposizione non si hanno modifiche sensibili nel dettaglio delle figure, ottenendo solo un piccolo miglioramento nel caso di elevata esposizione.
+\begin{figure}[b!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_umean_vs_x.pdf}
+		\label{fig:x_Unorm_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova4/prova4_umean_vs_x.pdf}
+		\label{fig:x_Unorm_4}
+		\caption{Prova 4}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova5/prova5_umean_vs_x.pdf}
+		\label{fig:x_Unorm_5}
+		\caption{Prova 5}
+	\end{subfigure}  
+   	\caption{$\nicefrac{u}{U_0}$(x) sulla centerline (\yd = 0)}
+	\label{fig:x_Unorm_145}
+\end{figure}
+\begin{figure}[b!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_umean_vs_y.pdf}
+		\label{fig:y_Unorm_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova4/prova4_umean_vs_y.pdf}
+		\label{fig:y_Unorm_4}
+		\caption{Prova 4}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova5/prova5_umean_vs_y.pdf}
+		\label{fig:y_Unorm_5}
+		\caption{Prova 5}
+	\end{subfigure}  
+	\caption{$\nicefrac{u}{U_0}$(y) a diversi \xd}
+	\label{fig:y_Unorm_145}
+\end{figure}
+\clearpage
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_contour_mean_u.pdf}
+		\label{fig:MEAN_U_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova4/prova4_contour_mean_u.pdf}
+		\label{fig:MEAN_U_2}
+		\caption{Prova 4}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova5/prova5_contour_mean_u.pdf}
+		\label{fig:MEAN_U_3}
+		\caption{Prova 5}
+	\end{subfigure}  
+      \caption{$\nicefrac{u}{U_0}$(x, y), campo medio}
+      \label{fig:MEAN_U_145}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_contour_std_u.pdf}
+		\caption{Prova 1}
+		\label{fig:STD_U_1}
+	\end{subfigure} 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova4/prova4_contour_std_u.pdf}
+		\caption{Prova 4}
+		\label{fig:STD_U_4}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova5/prova5_contour_std_u.pdf}
+		\caption{Prova 5}
+		\label{fig:STD_U_5}
+	\end{subfigure}
+      \caption{$\sigma_u$(x, y)}
+      \label{fig:STD_U_145}
+\end{figure}\par
+\clearpage
+\subsection{Apertura dell'obiettivo}
+L'apertura dell'obiettivo influisce sulla quantità di luce che entra nel sensore e sul campo di messa a fuoco. Nella prova 6 l'apertura del diaframma viene portata ad f/8 (più chiuso) nella prova 7 invece a f/4 (più aperto). Si attende, nella prova 6, una messa a fuoco ottimale nella zona centrale del getto e più sfocato nalla zona di efflusso ed in quella finale. Tali regolazioni mostrano come una esposizione elevata porti ad una peggiore distinzione tra particelle rendendo meno attendibili i risultati del software.\par
+Si osserva come nelle figg.~\ref{fig:x_Unorm_167}, \ref{fig:y_Unorm_167}, \ref{fig:MEAN_U_167} e  \ref{fig:STD_U_167} relative alla prova 7 una apertura maggiore del diaframma comporti una messa a fuoco più omogenea sul campo con una visualizzazione migliore anche delle zone di flusso periferiche.\par
+Da questi grafici si può apprezzare la nitidezza delle misure ottenute nel caso di apertura focale \textit{f}/4. Si nota come questo parametro sia quello che maggiormente influenza la validità delle misure. Bisogna però 0osservare che una maggiore apertura dell'obiettivo, mantenuta per un tempo prolungato, può causare danni permanenti al sensore della fotocamera. Per questo motivo, si è scelto di utilizzare per le prove una apertura di \textit{f}/5.6 compensando la perdita di nitidezza con la variazione degli altri due parametri.
+\begin{figure}[b!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_umean_vs_x.pdf}
+		\label{fig:x_Unorm_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova6/prova6_umean_vs_x.pdf}
+		\label{fig:x_Unorm_2}
+		\caption{Prova 6}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova7/prova7_umean_vs_x.pdf}
+		\label{fig:x_Unorm_3}
+		\caption{Prova 7}
+	\end{subfigure}  
+    	\caption{$\nicefrac{u}{U_0}$(x) sulla centerline (\yd = 0)}
+	\label{fig:x_Unorm_167}
+\end{figure}
+\begin{figure}[b!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_umean_vs_y.pdf}
+		\label{fig:y_Unorm_1}
+		\caption{Prova 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova6/prova6_umean_vs_y.pdf}
+		\label{fig:y_Unorm_2}
+		\caption{Prova 6}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova7/prova7_umean_vs_y.pdf}
+		\label{fig:y_Unorm_3}
+		\caption{Prova 7}
+	\end{subfigure}  
+	\caption{$\nicefrac{u}{U_0}$(y) a diversi \xd}
+      \label{fig:y_Unorm_167}
+\end{figure}
+\clearpage
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_contour_mean_u.pdf}
+		\label{fig:MEAN_U_1}
+		\caption{Prova 1}
+	\end{subfigure} 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova6/prova6_contour_mean_u.pdf}
+		\label{fig:MEAN_U_2}
+		\caption{Prova 6}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova7/prova7_contour_mean_u.pdf}
+		\label{fig:MEAN_U_3}
+		\caption{Prova 7}
+	\end{subfigure}  
+	\caption{$\nicefrac{u}{U_0}$(x, y), campo medio}
+	\label{fig:MEAN_U_167}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova1/prova1_contour_std_u.pdf}
+		\caption{Prova 1}
+		\label{fig:STD_U_1}
+	\end{subfigure} 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova6/prova6_contour_std_u.pdf}
+		\caption{Prova 6}
+		\label{fig:STD_U_2}
+	\end{subfigure}  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{prova7/prova7_contour_std_u.pdf}
+		\caption{Prova 7}
+		\label{fig:STD_U_3}
+	\end{subfigure}
+      \caption{$\sigma_u$(x, y)}
+      \label{fig:STD_U_167}
+\end{figure}
+\clearpage
+\section{Analisi del getto libero} 
+In questa sezione verranno analizzati i risultati ottenuti dalla fase di processazione delle immagini. Si procederà con il calcolo del campo medio, ed effettuando confronti con i risultati teorici; al calcolo della statistica del campo (deviazione standard, skewness, kurtosis) con richiami alla teoria di turbolenza sviluppata; al calcolo della densità spettrale di energia per individuare le scale spaziali del fenomeno, confrontando i risultati ottenuti con quelli teorici di Kolmogorov nel '41 e successivi lavori in merito. Verranno inoltre calcolate alcune grandezze di interesse applicativo quali le componenti del tensore di Reynolds, che data la loro natura incognita danno origine al problema della chiusura del sistema di equazioni differenziali per il campo medio. Si procederà infine con l'individuazione delle strutture vorticose, attraverso il metodo di Jeong-Hussain.
+\subsection{Suddivisione delle prove}
+Una volta verificata la configurazione ottimale dell'apparato sperimentale sono state effettuate le prove al variare della velocità di efflusso. La variazione di velocità è stata ottenuta indirettamente mediante la modifica della pressione nel serbatoio di alimentazione e direttamente operando sul compressore che alimenta la camera di ristagno. La differente velocità del flusso ha causato la necessità di variare il frame rate in modo da mantenere per tutte le prove uno spostamento simile delle particelle da un fotogramma al successivo. In questo modo si è potuta effettuare la processazione mantenendo la larghezza delle finestre di interrogazione uguale tra le diverse prove. I parametri utilizzati sono riportati in tab.~\ref{tab:prove_811}.
+\begin{table}[h!]
+	\centering
+	\begin{tabular}{@{}ccccc@{}}
+		\toprule
+		Prova & 8 & 9 & 10 & 11 \\ \midrule
+		$p_0$ [bar] & 1.1875 & 1.05613 & 1.50516 & 1.3506 \\ \midrule
+		$\Delta t$ [$\mu$s] & 5.5 & 11 & 3.6 & 4.4 \\ \midrule
+		\textit{Re} & 4.05 $\cdot$ 10$^4$ & 2.30 $\cdot$ 10$^4$ & 7.41 $\cdot$ 10$^4$ & 6.74 $\cdot$ 10$^4$ \\ \bottomrule
+	\end{tabular}
+	\caption{Valori di pressione e $\Delta t$ per le prove di velocità}
+	\label{tab:prove_811}
+\end{table}
+\clearpage
+\subsection{Campo medio}
+Si è proceduto con il calcolo del campo medio in termini di componenti $u$ e $v$ e del modulo $U$ della velocità, ottenuto mediando il campo sui frame acquisiti per ogni singola configurazione. Si riportano i risultati in forma grafica in \cref{fig:u_mean_8901}.\par
+Si osserva come il campo medio di velocità, a partire da una certa sezione, presenta una simmetria conica rispetto alla linea media, parallela all'asse x, che nel piano appare come simmetria assiale attorno alla centerline. La velocità assume valori massimi sulla centerline (l'andamento è riportato in \cref{fig:umean_vs_x_8901}) decrescenti allontanandosi dall'uscita del condotto. Inoltre, procedendo in direzione y lungo una fissata \xd l'andamento della velocità decresce fino a portarsi a 0. Lungo una sezione ad y costante, la velocità del getto tende a zero per la condizione al contorno imposta dal flusso esterno, in quiete.\par
+La simmetria conica è causata dalla proprietà di autosimilitudine del flusso, ovvero la caratteristica di assumere un andamento indipendente dalle condizioni iniziali. In particolar modo, si possono osservare le isolinee di \textit{u} aventi il tipico andamento parabolico.\par
+% Per quanto riguarda l'andamento di velocità in prossimità dell'uscita del condotto, si riconosce il profilo parabolico di Hagen-Poiseuille che si manifesta in condotti a sezione circolare.\par
+Viene inoltre riportato in \cref{fig:umean_vs_y_8901} l'andamento del profilo di velocità \textit{u} lungo l'asse y, al variare della distanza longitudinale \xd.\par
+Si nota come, a partire da una certa distanza dal condotto, (\xd $\simeq$ 1) l'andamento si mantiene piuttosto simile sezione per sezione, con un allargamento dello stesso e una diminuzione del valore massimo sulla centerline, per effetto della viscosità propria del fluido.\par
+La differenza di velocità tra il flusso esterno (fermo) e il getto causa il fenomeno del trascinamento (o \textit{entrainment}), che comporta un richiamo di fluido dall'esterno con conseguente aumento della portata in massa del getto in direzione longitudinale. Dato che sul fluido contenuto nella regione di interesse non vengono applicate forze, l'aumento di portata del getto comporta una diminuzione della velocità del getto stesso.\par
+L’entrainment di un getto è responsabile di un fenomeno, noto come effetto Coanda, che ha luogo quando un getto scarica parallelamente ad una superficie. Non potendo richiamare fluido dalla direzione della parete, per l’impermeabilità di questa, il getto si dissimmetrizza accostandosi alla superficie. Questo consente, utilizzando dei dispositivi attuatori che muovono le superfici in prossimità del getto, di variarne la direzione. Tale tecnologia è ad esempio utilizzata per orientare la spinta (prende il nome di \textit{thrust vectoring}), cambiando la direzione in cui è diretto il flusso di quantità di moto del getto. Nella combustione l'entrainment viene utilizzato per garantire una migliore miscelazione richiamando ossidante dall'esterno, così aumentando la densità di potenza del combustore.\par
+A dimostrazione di quanto detto si riporta in \cref{fig:vmean_vs_y_8901} l'andamento della componente \textit{v} del campo di velocità. SI nota il cambio di segno passando da y negative a positive, e si nota come gli errori di acquisizione in prossimità della sezione ad \xd = 0 rendano più irregolare il campo. 
+\clearpage
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.24\textwidth}
+		\includegraphics[width=\linewidth]{prova8/prova8_contour_mean_u}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}{0.24\textwidth}
+		\includegraphics[width=\linewidth]{prova9/prova9_contour_mean_u}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}{0.24\textwidth}
+		\includegraphics[width=\linewidth]{prova10/prova10_contour_mean_u}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}{0.24\textwidth}
+		\includegraphics[width=\linewidth]{prova11/prova11_contour_mean_u}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\nicefrac{u}{U_0}$(x, y), campo medio}
+	\label{fig:u_mean_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_umean_vs_x}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_umean_vs_x}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_umean_vs_x}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_umean_vs_x}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\nicefrac{u}{U_0}$(x) sulla centerline (\yd = 0)}
+	\label{fig:umean_vs_x_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_umean_vs_y.pdf}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_umean_vs_y.pdf}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_umean_vs_y.pdf}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_umean_vs_y.pdf}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\nicefrac{u}{U_0}$(y), \xd $\in$ [0; 6]}
+	\label{fig:umean_vs_y_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_vmean_vs_y}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_vmean_vs_y}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_vmean_vs_y}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_vmean_vs_y}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\nicefrac{v}{U_0}$(y), \xd $\in$ \{0; 4\}}
+	\label{fig:vmean_vs_y_8901}
+\end{figure}
+\clearpage
+\subsection{Statistica}
+Per comprendere la natura della turbolenza sviluppata, si è proceduto al calcolo dei più importanti momenti statistici (standard deviation, skewness e flatness).\par
+I vari momenti verranno calcolati sia per le singole componenti che per il modulo della velocità; verranno inoltre confrontati tra loro, mettendo in evidenza, laddove sia necessario, le significative differenze che questi presentano tra le due componenti \textit{u} e \textit{v}, e tra la generica componente e il modulo del vettore velocità.\par
+Bisogna notare che le varie grandezze statistiche possono essere affette da errore di tipo sistematico, intendendo che nel calcolo di queste ultime si tengono in considerazione sia valori che rappresentano effettivamente eventi fluidodinamici, sia valori provenienti da errori di misura e rumore. In particolare, la presenza di questi ultimi in zone di campo a basso valore di velocità può dar luogo a errori considerevoli sul calcolo delle varie grandezze. Per aumentare la precisione delle misure, si è proceduto con un ulteriore filtraggio dei valori ottenuti da PIVlab, validando, ai fini del calcolo, per ogni pixel e per ogni frame, tutti quei valori che rientrano in $\pm 3\sigma$ dal campo medio.\par 
+Partendo dalla deviazione standard, vengono riportati in forma grafica i risultati cosi ottenuti:\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_std_u}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_std_u}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_std_u}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_std_u}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\sigma_u$(x, y) [m/s]}
+	\label{fig:contour_std_u_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_std_v}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_std_v}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_std_v}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_std_v}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\sigma_v$(x, y) [m/s]}
+	\label{fig:contour_std_v_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_std_modulo}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_std_modulo}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_std_modulo}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_std_modulo}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\sigma_U$(x, y) [m/s]}
+	\label{fig:contour_std_umod_8901}
+\end{figure}
+Dai grafici della deviazione standard relativi alla sola componente $u$ (\cref{fig:contour_std_u_8901}), alla componente $v$ (\cref{fig:contour_std_v_8901}) ed al modulo della velocità $U$ (\cref{fig:contour_std_umod_8901}), si può notare una suddivisione del flusso in diverse zone: una prima regione di flusso esterno, in cui, come atteso, si ha un valore di $\sigma$ prossimo allo zero per il flusso fermo; una seconda regione, in cui la deviazione standard aumenta fino a raggiungere un massimo, che dal confronto con \cref{fig:contour_std_u_8901} si osserva essere anche la regione a più alta intensità di turbolenza; ed una terza zona, che si estende fino a \xd $\ \simeq$ 4, di forma parabolica, in cui il flusso mantiene deviazione standard ridotta e andamento della velocità simile a quello assunto all'interno del condotto, che in questo caso coincide con quello determinato dalla soluzione di Hagen-Poiseuille.
+% passando gradualemete da valori prossimi allo zero in prossimità del bordo dell'immagine, zona coincidente con il flusso esterno mediamente fermo, a valori consistenti avvicinandosi alla centerline, zona in cui è presente fisicamente il getto. Si nota inoltre una piccola regione a forma di parabola in prossimità dell'uscita del condotto, in cui la deviazione standard risulta estremamente bassa, paragonabile quasi a quella del flusso mediamente fermo, questa regione coincide con la zona dove la componente u assume l'andamento tipico del flusso di Hagen Poiseuille precedentemente enfatizzata nella sezione "Campo medio".\\
+Infine, si nota come l'andamento della standard deviation associata alla componente \textit{u}, nonché i valori che essa assume, si discostano molto poco da quelli della $\sigma$ calcolata per il modulo della velocità. Ciò consegue dal ridotto valore della componente \textit{v}, che non influisce particolarmente nel campo del modulo U.\par
+Si procede ora con l'analisi della skewness, i cui grafici sono riportati in figg. \ref{fig:contour_skewness_u_8901}, \ref{fig:contour_skewness_v_8901} e \ref{fig:contour_skewness_modulo_8901} per poi commentarli.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_skewness_u}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_skewness_u}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_skewness_u}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_skewness_u}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{s$_u$(x, y)}
+	\label{fig:contour_skewness_u_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_skewness_v}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_skewness_v}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_skewness_v}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_skewness_v}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{s$_v$(x, y)}
+	\label{fig:contour_skewness_v_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_skewness_modulo}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_skewness_modulo}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_skewness_modulo}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_skewness_modulo}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{s$_U$(x, y)}
+	\label{fig:contour_skewness_modulo_8901}
+\end{figure}\par
+In questo caso, i risultati di maggior interesse si osservano nella \cref{fig:contour_skewness_modulo_8901}, nella quale si osserva, per tutte le prove, la presenza delle stesse regioni già discusse nello studio della deviazione standard. Anche in questo caso l'analisi della skewness in prossimità del condotto mostra una zona di forma parabolica in cui tale grandezza assume valori prossimi allo 0, a conferma di quanto già osservato precedentemente nell'analisi della deviazione standard. Una skewness quasi nulla indica che il valore più frequente coincide con il valor medio. Questa informazione, associata a quella della deviazione standard, può essere prova che in questa regione il flusso mantiene, almeno in parte, un comportamento laminare. Tale ipotesi sarà validata dall'analisi della kurtosis e dall'intensità di turbolenza.\par
+Proseguendo con l'analisi si nota come l'andamento della skewness nel getto sia crescente e negativo all'aumentare di $\nicefrac{\textrm{x}}{\textrm{D}}$. Una skewness negativa è indicazione di eventi meno intensi in modulo rispetto al valor medio, ovvero di un flusso in rallentamento. Si può ricavare da considerazioni teoriche che l'andamento crescente indica trasferimento di energia da scale di turbolenza più grandi a scale più piccole. Un andamento decrescente avrebbe indicato un trasferimento in direzione opposta, ovvero la cascata inversa.\par
+Riassumendo, il flusso del getto rallenta e crea strutture vorticose di dimensione sempre più piccole, rendendo omogenea la struttura del getto stesso. Tale fenomeno trova conferma anche attraverso l'analisi del campo medio, della deviazione standard e, come si vedrà, anche dall'analisi di intensità di turbolenza.\par
+Sempre con riferimento all'andamento della skewness della componente \textit{u}, si nota un passaggio da valori negativi all'interno del getto a valori positivi e di modesta intensità al bordo del getto stesso. Questo implica una decelerazione del getto ad opera del fluido esterno, ovvero di una accelerazione del flusso esterno in prossimità del bordo ad opera del getto interno completamente turbolento, creando il fenomeno del trascinamento già discusso. La presenza di questo bordo di dimensione finita, in cui la skewness cambia segno, indica la presenza di uno shear layer in prossimità del bordo del getto stesso. Lo shear layer si dispone simmetricamente rispetto alla centerline, a causa della simmetria del getto.\par
+Lungo il confine del getto si osserva un sempre più graduale passaggio da una skewness negativa interna ad una positiva esterna. Questo indica che i gradienti di velocità nella zona di shear sono sempre meno ripidi.\par
+Per quanto riguarda l'andamento della skewness della componente \textit{v}, si trova conferma di quanto già detto in precedenza, ovvero una distribuzione simmetrica, ma di segno opposto, rispetto alla centerline, indicazione del fenomeno di aumento della portata del getto, che richiama a sé fluido esterno.\par
+\clearpage
+L'ultima grandezza statistica presa in considerazione è la flatness, o kurtosis. Si riportano i risultati ottenuti in figg. \ref{fig:contour_kurtosis_u_8901}, \ref{fig:contour_kurtosis_v_8901} e \ref{fig:contour_kurtosis_modulo_8901}.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_kurtosis_u}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_kurtosis_u}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_kurtosis_u}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_kurtosis_u}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$k_u$(x, y)}
+	\label{fig:contour_kurtosis_u_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_kurtosis_v}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_kurtosis_v}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_kurtosis_v}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_kurtosis_v}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$k_v$(x, y)}
+	\label{fig:contour_kurtosis_v_8901}
+\end{figure}	
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_kurtosis_modulo}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_kurtosis_modulo}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_kurtosis_modulo}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_kurtosis_modulo}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$k_U$(x, y)}
+	\label{fig:contour_kurtosis_modulo_8901}
+\end{figure}\par	
+Per quanto riguarda l'andamento della kurtosis valgono le stesse considerazioni dei casi precedentemente trattati. In particolare l'andamento della flatness delle diverse componenti presenta sempre la consueta simmetria rispetto alla centerline, la demarcazione di una zona a forma parabolica in prossimità del condotto, in cui assume un valore quasi costante e pari a 3, un andamento crescente nel getto spostandosi lungo y dalla centerline verso l'esterno, raggiungendo un massimo al bordo, ed infine un andamento sempre di tipo crescente muovendosi lungo l'asse x partendo dal condotto, in cui si raggiungono valori superiori a 3.\par
+Si possono comunque fare nuove osservazioni rispetto ai casi precedenti: si può infatti notare come, al confine tra la zona di normalizzazione parabolica (in cui si era determinata una bassa $\sigma$ e skewness) e il getto circostante, la flatness vada ad assumere gli stessi valori registrati al confine tra il getto e il flusso esterno.  Si può immaginare l'esistenza di un ulteriore shear layer, che separa la zona di normalizzazione dalla zona circostante. Si deve però osservare che i valori dei precedenti momenti statistici non convalidano questa ipotesi.\par
+% Tuttavia si possono fare diverse osservazioni in merito a tale andament, prima tra tutte bisogna notare la zona di confine tra la regione vicino il condotto (a distribuzione parabolica), e il resto del getto, tale regione presenta dei valori locali molto elevati rispetto a quelli circostanti, che ricordiamo essere nell'intorno di 3, questo fatto è sinonimo di non stazionarietà del flusso stesso, nonchè della presenza di un secondo shear layer di piccolo spessore distaccatosi all'uscita del condotto.\\
+In vicinanza del condotto, nella regione di forma parabolica, si può osservare che la kurtosis assume il valore di riferimento per un segnale puramente gaussiano di $k = 3$. Si può supporre, quindi, che il segnale registrato in questa regione sia laminare, come atteso nella regione in prossimità dell'uscita, a cui è sovrapposto un segnale di rumore.\par
+Sempre con riferimento alla kurtosis, si osservano dei picchi in corrispondenza delle zone non direttamente interessate dal getto stesso. Tali picchi non trovano fondamento fisico, né corrispondenza in letteratura, e si può ragionevolmente supporre siano causati da una propagazione degli errori di tipo numerico, dovuta essenzialmente ai bassi valori della velocità media nonché della standard deviation prossimi allo 0.
+\clearpage   
+\subsection{Intensità di turbolenza}
+Una delle grandezze di interesse in ambito di studio di flussi turbolenti è l'indice di turbolenza, detta anche intensità di turbolenza, definita come:
+$$I_{\sigma} = \dfrac{\sqrt{<u'^{2}>+<v'^{2}>}}{<u>}$$
+dove $u'$ indica la componente di fluttuazione della velocità, e il simbolo $<>$ indica il valor medio della grandezza presa in considerazione.\par
+Dalla sua definizione si intuisce come tale indice sia correlato al rapporto tra l'energia media associata al campo di fluttuazione e quella associata al campo medio.\par
+Per il caso del getto libero preso in esame si hanno i  valori di $I_{\sigma}$ indicati in \cref{fig:contour_sigma_8901}.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_sigma}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_sigma}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_sigma}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_sigma}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$I_\sigma$(x, y)}
+	\label{fig:contour_sigma_8901}
+\end{figure}\par
+I grafici mettono in evidenza un andamento delle isolinee di $I_{\sigma}$ in prossimità della centerline inizialmente parabolico con vertice sulla linea media. Procedendo in direzione \textit{y}, le isolinee passano gradualmente ad un andamento di tipo conico.\par
+Da quanto già osservato, il getto mostra un comportamento sempre più turbolento allontanandosi dall'uscita del condotto e in direzione \textit{y} allontanandosi dalla linea media. Si può notare inoltre come l'intensità di turbolenza presenti un valore massimo esattamente sul bordo del getto stesso, ovvero si posiziona sulla linea ideale di confine tra getto e fluido indisturbato.\par
+Si riporta inoltre in \cref{fig:sigma_centerline_8901} l'andamento dell'intensità di turbolenza lungo \xd in prossimità della centerline.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_sigma_centerline}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_sigma_centerline}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_sigma_centerline}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_sigma_centerline}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$I_{\sigma}$(x), diversi \yd}
+	\label{fig:sigma_centerline_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_sigma_y}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_sigma_y}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_sigma_y}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_sigma_y}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$I_{\sigma}$(y), \xd= 5}
+	\label{fig:sigma_y_8901}
+\end{figure}
+Si nota un andamento costante per un primo tratto $0<\ $\xd$<1$ a bassa intensità di turbolenza $I_\sigma\simeq 5\%$, indicazione del fatto che il flusso in prossimità dell'uscita del condotto sia ancora laminare; per \xd $>1$, invece, l'andamento risulta crescente: il getto si mantiene laminare per un primo tratto molto piccolo in prossimità dell'uscita, per poi risultare completamente turbolento, creando strutture vorticose via via sempre più piccole.\par
+Per quanto riguarda l'andamento dell'intensità di turbolenza nel getto lungo $y$ a sezione fissata (riportato in \cref{fig:sigma_y_8901}), si nota un andamento simmetrico di tipo decrescente avvicinandosi alla centerline, fino al raggiungimento di un minimo in prossimità dell'asse. Questo tipo di comportamento è compatibile con quanto già detto a proposito dell'entrainment e alla presenza dello shear layer.\par
+Anche in questo caso si notano delle regioni non direttamente interessate dal getto stesso, in cui si è in presenza di un alto indice di turbolenza. Non trovando riscontro né in termini fisici né in letteratura, si è in presenza di errori numerici, cosi come discusso nella sezione riguardante la kurtosis. Gli errori numerici derivano dal comportamento del software utilizzato (PIVlab) in presenza di punti del campo in cui non è in grado di rilevare particelle.
+\subsection{Spettro di densità di energia}
+In questa sezione ci si propone di calcolare la distribuzione spettrale dell'energia cinetica associata al getto, in funzione del numero d'onda $k=\nicefrac{2\pi}{\lambda}$, dove $\lambda$ rappresenta la lunghezza d'onda. Essendo il problema bidimensionale, ma con una simmetria conica, si è scelto di trasformare in Fourier la singola coordinata \textit{r}, distanza del generico punto dal centro della sezione di efflusso.\par
+La conoscenza dello spettro di energia, nonchè delle diverse scale, è determinante ai fini applicativi. Si pensi infatti ad una camera di combustione, dove il grado di mescolamento della miscela nelle diverse scale può rendere estremamente efficiente la combustione. Questo è uno dei motivi per il quale, in genere, in camera di combustione si favorisce la creazione di flussi notevolmente turbolenti.\par
+L'utilizzo dello spettro di energia non è solo confinato a fini applicativi, ma anche ai fini dell'analisi numerica di flussi di vario genere attraverso il metodo LES (Large Eddy Simulation).\par
+Data l'estensione finita del nostro flusso si procede col calcolo dello spettro, attraverso l'uso della trasformata di Fourier in 2D del campo di velocità.\par
+Si ricorda che, per il teorema di Parseval, lo spettro di densità di energia è dato da:
+$$E(k)=|\tilde{U}(k)|^{2}$$
+dove $E$ è la densità di energia spettrale e $\tilde{U}(k)$ è la trasformata di Fourier del campo di velocità.\par
+Si riportano in \cref{fig:spettro_energia_8901} i risultati cosi ottenuti. 
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_spettro_energia}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_spettro_energia}
+			\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_spettro_energia}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_spettro_energia}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{Spettri di energia}
+	\label{fig:spettro_energia_8901}
+\end{figure}\par
+Nel grafico rappresentato in figura, oltre a riportare lo spettro, si riporta la retta con pendenza $-5/3$, valida solo nell'intervallo inerziale, ottenuta in modo esatto da Kolmogorov nel '41. Detto intervallo è così definito perché la dinamica è dominata solo dagli effetti di natura inerziale, o di trasporto delle grandezze nelle equazioni di Navier Stokes. Inoltre in questo intervallo non si hanno termini di produzione di energia né di dissipazione. Si capisce quindi che in questo range di numeri d'onda l'unico fenomeno che interviene è il trasferimento o passaggio di energia sulle diverse scale in gioco; bisogna osservare che questo gap, che divide le scale di immissione di energia e di dissipazione, è fortemente influenzato dal numero di Reynolds macroscopico. Tale andamento tuttavia presenta delle zone di non linearità: per numeri d'onda prossimi a $10^{4}$ si osserva una curva crescente/decrescente, fino ad assestamento della stessa sulla retta di pendenza $-5/3$; dato l'ordine di grandezza dei numeri d'onda in cui si ha questo andamento, si ipotizza che questa zona sia quella inerente all'immissione di energia, o range di produzione.\par
+Si nota, inoltre, in prossimità di numeri d'onda prossimi a $10^{6}$ un'ulteriore zona di non linearità, che viene troncata quasi immediatamente; si ipotizza che tale regione sia l'inizio dell'intervallo di dissipazione. Infatti da teoria la scala più piccola osservabile nell'intervallo inerziale, confine con l'intervallo dissipativo, è la scala di Kolmogorov $\eta$ definita come
+$$\eta=L_{0} Re^{-3/4}$$
+dove $L_{0}$ è la cosiddetta scala integrale. Nel caso in esame si ottiene $\eta=o(10^{-6})$ m, ovvero un numero d'onda pari a $k = o(10^{6})$, in accordo con quanto ottenuto nei risultati.
+\subsection{Tensore di Reynols}
+Molto spesso nelle simulazioni di un flusso si incorre nel problema della chiusura delle equazioni del campo medio. Queste equazioni, infatti, constano di un termine incognito, ovvero il tensore di Reynolds, ottenuto costruendo il tensore della media della correlazione delle velocità di fluttuazioni.\par
+Tale grandezza non rappresenta nulla di fisico, ma piuttosto un'accortezza matematica che compare per tener conto dell'aver mediato le equazioni di Navier Stokes.\par
+Se si volesse chiudere il problema, bisognerebbe scrivere un'equazione di evoluzione per questa grandezza. Tuttavia questo approccio non è possibile, poiché nella scrittura delle varie equazioni di evoluzione si aggiungono un numero crescente di incognite.\par
+Il metodo alternativo è quello che prevede l'utilizzo di modelli quali $k-\epsilon$, o LES (Large Eddy Simulation), oppure eseguire una simulazione diretta del flusso (DNS), di notevole costo computazionale.\par
+Quello che si cerca di fare in questa sezione è tentare di ricostruire il tensore di Reynolds, funzione del punto, mettendo in evidenza il comportamento delle diverse componenti in funzione delle direzioni caratteristiche. Bisogna precisare che il tensore di Reynolds consta di 6 componenti indipendenti poiché per costruzione è simmetrico. Tuttavia avendo a disposizione un dominio piano, verranno calcolate solo le componenti principali in direzione x e y e la componente mista xy, aggiungendo inoltre che data la simmetria cilindrica del getto le componenti miste x-z ed y-z risultano nulle.\par
+Vengono riportati i risultati cosi ottenuti in figg.~\ref{fig:tensore_reynolds_vs_x_8901} e \ref{fig:tensore_reynolds_vs_y_8901}.
+\clearpage
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_tensore_reynolds_vs_x}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_tensore_reynolds_vs_x}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_tensore_reynolds_vs_x}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_tensore_reynolds_vs_x}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{Componenti di $T_R$(x), \yd= 0}
+	\label{fig:tensore_reynolds_vs_x_8901}
+\end{figure}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_tensore_reynolds_vs_y}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_tensore_reynolds_vs_y}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_tensore_reynolds_vs_y}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_tensore_reynolds_vs_y}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{Componenti di $T_R$(y), \xd= 1}
+	\label{fig:tensore_reynolds_vs_y_8901}
+\end{figure}
+Nel grafico in \cref{fig:tensore_reynolds_vs_x_8901} è stato rappresentato l'andamento delle diverse componenti in funzione di \xd in corrispondenza della centerline; si nota un andamento costante per un tratto iniziale per poi proseguire in una crescita in modulo di ogni componente. In particolare, si osserva un aumento consistente della componente lungo x, a conferma di quanto visto dall'analisi della kurtosis, maggiore per la componente \textit{u} del campo rispetto a quella relativa alla \textit{v}. Infatti, a valori più elevati di flatness corrispondono maggiori probabilità di trovare valori lontani da quello medio e quindi valori più elevati di $u'$.\par
+Nei grafici in \cref{fig:tensore_reynolds_vs_y_8901} si è riportato invece l'andamento delle componenti del tensore di Reynolds in funzione della $\nicefrac{\textrm{y}}{\textrm{D}}$, avendo fissato la sezione (\xd = 1). Per le componenti x e y si osserva un aumento considerevole delle grandezze in prossimità del bordo del getto, costante lungo la \textit{r}, come osservato in \yd $\in$ [-1; 1]. Per quanto riguarda la componente mista, si osserva un aumento di tale grandezza in prossimità del bordo del getto, che avviene in maniera più graduale fino ad un picco massimo per poi decrescere. Tale componente presenta, come atteso dal diverso segno di $v$, una disparità rispetto alla centerline.
+\subsection{Individuazione delle strutture vorticose}
+In questa sezione si procederà all'individuazione delle strutture vorticose, attraverso il metodo di Jeong-Hussain. Tale metodo, proposto nel 1995 da Jeong \& Hussain ed esposto in \cite{jeong95} come alternativa alla sottrazione del campo medio, è basato sulla valutazione del tensore gradiente di velocità.\par
+Generalmente il metodo è applicato ad un campo tridimensionale, ma può essere utilizzato anche in domini bidimensionali, nei quali si riduce alla valutazione degli invarianti P (traccia) e Q (determinante) del tensore gradiente di velocità, e alla determinazione delle zone in cui si ha $\Delta = P^{2} - 4Q$. Il valore $\Delta = 0$ costituisce un confine tra le zone in cui sono presenti strutture vorticose e quelle in cui è presente turbolenza diffusa.\par
+In \cref{fig:contour_delta_8901} vengono riportati i valori di $\Delta$ calcolati sul gradiente di alcune istantanee nelle diverse configurazioni del flusso.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova8/prova8_contour_delta}
+		\caption{Prova 8}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova9/prova9_contour_delta}
+		\caption{Prova 9}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova10/prova10_contour_delta}
+		\caption{Prova 10}
+	\end{subfigure}
+	\begin{subfigure}[b]{0.24\textwidth}
+		\includegraphics[width=\textwidth]{prova11/prova11_contour_delta}
+		\caption{Prova 11}
+	\end{subfigure}
+	\caption{$\Delta$(x, y)}
+	\label{fig:contour_delta_8901}
+\end{figure}
+Si osservano strutture vorticose presenti all'interno del flusso, confinate nella regione interna agli shear layer. Come atteso, l'intensità di tali strutture va aumentando con il numero di Reynolds del flusso, e quindi con la pressione $p_0$ a monte.
+\section{Confronto con references}
+Per confermare la validità dei risultati ottenuti si possono confrontare gli andamenti registrati con quelli riportati in altri lavori. Si sono scelti come riferimenti i lavori \cite{falchi09} e \cite{bradbury65}, in cui si investiga l'evoluzione di un getto libero, anche partendo da diversi profili iniziali di velocità. Bisognerà tenere conto che il lavoro presentato in \cite{falchi09} riguarda l'evoluzione di un getto libero in acqua, e quindi i profili ottenuti potranno essere confrontati solo in maniera qualitativa. I grafici riportati in \cite{falchi09} provengono dalla mediazione di 10000 coppie di fotogrammi, con conseguente elevata riduzione del rumore di fondo. I grafici riportati in questo lavoro, invece, sono ottenuti a partire da 500 coppie di immagini, e pertanto sono caratterizzati da maggior rumore e quindi minor precisione delle misurazioni.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{ref/romano06_campo_medio}
+		\caption{Da \cite{falchi09}, fig.~2a, Re $\approx$ 2 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{prova10/prova10_contour_mean_u_jet}
+		\caption{Prova 10, Re = 7.41 $\cdot$ 10$^4$}
+	\end{subfigure}
+\end{figure}\par
+Dal confronto del campo medio ottenuto con quello riportato in \cite{falchi09}, si può osservare la simile geometria del flusso: una regione inizialmente triangolare in cui il getto mantiene una velocità prossima a quella iniziale di riferimento, regione che evolve ad assumere una forma parabolica, come si può osservare dalle isolinee di velocità $\nicefrac{u}{U_0}$ = 0.5 e minori. Si può anche osservare come il flusso si espanda a raggiungere estensioni simili: sia in \cite{falchi09} che nei dati presentati il flusso si estende, per \xd = 6, nell'intervallo \yd $\in$ [-1.5, 1.5]. Si nota invece una differenza nel rallentamento del flusso: nei dati osservati da \cite{falchi09} sulla linea di mezzeria il getto assume velocità pari a 0.9 U$_0$ nella sezione \xd = 6, mentre nei dati presentati questo valore viene assunto molto prima, in \xd = 1.5.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{ref/romano06_skewness}
+		\caption{Da \cite{falchi09}, fig.~5a, Re $\approx$ 2 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{prova10/prova10_contour_skewness_modulo_jet}
+		\caption{Prova 10, Re = 7.41 $\cdot$ 10$^4$}
+	\end{subfigure}
+\end{figure}\par
+Simili conclusioni si possono ottenere analizzando la skewness del campo: sia in \cite{falchi09} che nei dati presentati si possono osservare le regioni di shear layer che confinano il getto, caratterizzate da valori di skewness elevati e confrontabili in valore assoluto tra le \textit{references} e i dati ottenuti. Si può osservare come sia presente in entrambi i grafici una regione centrale di estensione simile a quella triangolare vista nei grafici precedenti, in cui la skewness risulta ridotta in modulo e leggermente negativa. Si può confermare, inoltre, che la regione a più alta velocità sia effettivamente una zona di fluido con comportamento differente dal resto del campo.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{ref/romano06_flatness}
+		\caption{Da \cite{falchi09}, fig.~6a, Re $\approx$ 2 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{prova10/prova10_contour_kurtosis_modulo_jet}
+		\caption{Prova 10, Re = 7.41 $\cdot$ 10$^4$}
+	\end{subfigure}
+\end{figure}\par
+Stesse considerazioni per la kurtosis, in cui in entrambi i grafici si ha una valore raramente inferiore a $k = 3$, dato il rumore, seppur ridotto, presente in ogni misura. I valori assunti, specialmente nello shear layer, hanno ordini di grandezza differenti, raggiungendo valori massimi di circa 6 nei dati raccolti e di più di 15 nei dati riportati in \cite{falchi09}. Allo stesso modo, la regione centrale, compresa tra i due shear layer, presenta valori più bassi nel grafico dei dati raccolti che in quello presentato dal \cite{falchi09}. Ad ogni modo, risultano comunque simili gli andamenti.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{ref/romano06_reynolds}
+		\caption{Da \cite{falchi09}, fig.~8b, Re $\approx$ 2 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{prova10/prova10_tensore_reynolds_vs_y}
+		\caption{Prova 10, Re = 7.41 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{ref/bradbury65_reynolds}
+		\caption{Da \cite{bradbury65}, fig.~9}
+	\end{subfigure}
+\end{figure}\par
+Altre conferme della validità dei risultati ottenuti possono essere ricavate dall'analisi del tensore di Reynolds. Per quanto riguarda l'unica componente fuori diagonale, si osserva come l'andamento analitico (indicato nel primo grafico dalla retta tratteggiata) sia riprodotto in maniera sufficientemente fedele, dato che in entrambi i casi si ha uno zero per \yd = 0 ed il massimo o minimo locale viene sempre assunto in corrispondenza di \yd = $\pm$ 0.5. Per la componente $T_{R,\ xx}$, allo stesso modo si osserva un andamento simile in estensione ma meno in valore assoluto. Ovviamente, questo è causato dalla forte dipendenza del tensore dal numero di Reynolds.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{ref/romano06_umean_vs_y}
+		\caption{Da \cite{falchi09}, fig.~8a, Re $\approx$ 2 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{prova10/prova10_umean_vs_y_autosimile}
+		\caption{Prova 10, Re = 7.41 $\cdot$ 10$^4$}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{ref/bradbury65_autosimile}
+		\caption{Da \cite{bradbury65}, fig.~4}
+	\end{subfigure}
+\end{figure}\par
+Un ultimo confronto può essere quello sulla forma del profilo di velocità autosimile: si può osservare come il profilo assunto nelle sezioni \xd da 1 a 6 presenti lo stesso andamento a campana di quello in \xd = 7 riportato in \cite{falchi09} e in varie sezioni da \cite{bradbury65}. Si deve osservare che l'allargamento progressivo presente nei dati registrati non è osservato nel grafico di \cite{bradbury65} in quanto la normalizzazione avviene rispetto alla dimensione caratteristica dello shear layer $\delta$, crescente con l'allontanamento dalla sezione di efflusso.
+\section{Conclusioni ed Osservazioni}
+Sono state individuate, per la regione di spazio interessata dall'uscita di un getto libero da un condotto a sezione circolare, tre regioni caratteristiche: una prima, di flusso esterno, non influenzata dal getto; una seconda di shear layer, che divide il flusso esterno dal getto ed in cui le grandezze caratterizzanti la turbolenza (deviazione standard, intensità di turbolenza e $\Delta$) crescono fino ad arrivare, in alcuni casi, ai valori massimi registrati all'interno del campo; una terza zona compresa tra i due shear layer in cui il flusso tende a mantenersi inizialmente laminare e ad assumere andamenti del profilo di velocità autosimili. Si osserva inoltre come gli andamenti dei campi di velocità siano poco influenzati dalla pressione a monte del condotto: in particolare, l'apertura del profilo del getto risulta influenzata dalla pressione a monte (ovvero dalla quantità di moto iniziale), ma non in maniera significativa. Si può notare, invece, come risulti sensibilmente modificata l'ampiezza dell'intervallo inerziale al variare della pressione (data dalla forte dipendenza di questo range dal numero di Reynolds macroscopico del flusso). Si sono inoltre osservati fenomeni caratteristici del getto libero quali il trascinamento di flusso esterno, e sono state calcolate grandezze caratteristiche quali le componenti del tensore di Reynolds.
+\bibliographystyle{plain}
+\bibliography{PIV}
+\end{document}
