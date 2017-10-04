@@ -1,0 +1,44 @@
+\begin{thebibliography}{1}
+
+\bibitem{braza06}
+Marianna Braza, Rodolphe Perrin, and Yannick Hoarau.
+\newblock Turbulence properties in the cylinder wake at high reynolds numbers.
+\newblock {\em Journal of fluids and Structures}, 22(6):757--771, 2006.
+
+\bibitem{catalano03}
+Pietro Catalano, Meng Wang, Gianluca Iaccarino, and Parviz Moin.
+\newblock Numerical simulation of the flow around a circular cylinder at high
+  reynolds numbers.
+\newblock {\em International Journal of Heat and Fluid Flow}, 24(4):463--469,
+  2003.
+
+\bibitem{elmakdah13}
+Adnan~M El-Makdah and Ghanem~F Oweis.
+\newblock The flow past a cactus-inspired grooved cylinder.
+\newblock {\em Experiments in fluids}, 54(2):1--16, 2013.
+
+\bibitem{lopez_cyl}
+Manuel López.
+\newblock High reynolds flow past circular cylinder, 2d, re = 1e6, ma = 0.2,
+  very coarse grid.
+\newblock https://www.youtube.com/watch?v=b6kx8-jrK6Q, apr 2016.
+
+\bibitem{norberg87}
+Christoffer Norberg.
+\newblock Effects of reynolds number and a low-intensity freestream turbulence
+  on the flow around a circular cylinder.
+\newblock {\em Chalmers University, Goteborg, Sweden, Technological
+  Publications}, 87(2), 1987.
+
+\bibitem{roshko61}
+Anatol Roshko.
+\newblock Experiments on the flow past a circular cylinder at very high
+  reynolds number.
+\newblock {\em Journal of Fluid Mechanics}, 10(03):345--356, 1961.
+
+\bibitem{williamson96}
+Charles~HK Williamson.
+\newblock Vortex dynamics in the cylinder wake.
+\newblock {\em Annual review of fluid mechanics}, 28(1):477--539, 1996.
+
+\end{thebibliography}

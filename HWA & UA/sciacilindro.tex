@@ -1,0 +1,529 @@
+\documentclass{article} % A4 paper and 11pt font size
+\usepackage[export]{adjustbox}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage[italian]{babel}
+\usepackage[font={small}, justification=centering]{caption}
+\usepackage[cm]{fullpage}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{nicefrac}
+\usepackage{setspace}
+\usepackage{subcaption}
+\usepackage{cleveref}
+
+\newcommand{\mps}{\ \nicefrac{\textrm{m}}{\textrm{s}}}
+\newcommand{\xd}{\nicefrac{\textrm{x}}{\textrm{D}}\ }
+\newcommand{\yd}{\nicefrac{\textrm{y}}{\textrm{D}}\ }
+
+\graphicspath{{./images/}}
+\onehalfspacing
+
+\title{\huge Scia a valle di un cilindro: analisi HWA e UA}
+\author{Fabio Alfano, Luca Candela,\\Stefano Gambuzza, Matteo Hakimi}
+\date{}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduzione}
+Si vuole misurare sperimentalmente la scia generata da un corpo cilindrico a sezione circolare investito da una corrente uniforme, utilizzando come strumenti di misura un anemometro a filo caldo ed un anemometro a ultrasuoni. \par
+Dopo un'acquisizione iniziale di dati provenienti dagli strumenti con la galleria operante a velocità note, allo scopo di trovare una legge di calibrazione degli anemometri, è stato inserito il cilindro nella camera di prova per misurare il campo di velocità a valle del corpo stesso, prestando attenzione al comportamento turbolento della scia.
+
+\subsection{Fenomeno fisico}
+La scia che si genera a valle di un corpo immerso in una corrente è una zona in cui i fenomeni turbolenti, e quindi la viscosità del fluido stesso, dominano il comportamento del flusso.\par
+Questa è una zona ad alta vorticità in cui si ha il passaggio di energia da grandi scale (scala integrale) a piccole scale, in cui viene dissipata (scala di Kolmogorov). La separazione tra le scale, ovvero la differenza delle lunghezze caratteristiche delle scale, dipende direttamente dal numero di Reynolds.\par
+In questa zona il campo di velocità viene trattato come una grandezza stocastica, somma di un campo macroscopico medio e di un campo di fluttuazione dipendente dalla scala spaziale. In particolare la probabilità di avere degli eventi più intensi aumenta al diminuire della scala.\par
+Allo scopo di verificare queste affermazioni, si procederà a misurare grandezze come il campo medio ed i vari momenti statistici fino al quarto ordine, con l'obiettivo di verificare l'effettiva dimensione della zona di turbolenza e di ricircolo, oltre che una misura del trasferimento di energia tra scale.\par
+
+\subsection{Apparato sperimentale}
+Le prove sono state effettuate nella galleria del vento dell'Università, avente una camera di prova a sezione circolare di diametro 0.9 m e di lunghezza 1.2 m. La galleria può operare a velocità del flusso comprese tra 0 e 45 m/s, ma si è deciso dii mantenere la velocità della corrente inferiore a 30 m/s in fase di calibrazione degli strumenti di misura e pari a 10 m/s durante le misurazioni in scia.\par
+Il cilindro utilizzato ha sezione circolare, diametro $D$ = 0.1 m e lunghezza $L$ = 0.4 m, ed è stato sospeso nella camera mediante un braccio metallico sottile, non lambito dalla corrente. Il diametro del cilindro è stato scelto sia come dimensione di riferimento per la normalizzazione delle coordinate spaziali
+sia come lunghezza di riferimento per il calcolo del numero di Reynolds del flusso
+\begin{equation*}
+	Re = \frac{u_{\infty} D}{\nu}
+\end{equation*}
+numero di Reynolds che è risultato essere $Re = 6.378\cdot10^4$ in fase di studio della scia, risultando quindi in un flusso turbolento a valle del cilindro (\cite{norberg87}).
+\subsection{Anemometro a filo caldo}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.6\linewidth]{hwa/hotwire_penny.jpg}
+	\caption{Un anemometro a filo caldo; si può notare la ridotta dimensione del filo.}
+\end{figure}
+Anche noto con l'acronimo HWA (dall'inglese Hot Wire Anemometer), è un dispositivo che sfrutta un ponte di Wheatstone per mantenere a temperatura costante una resistenza di ridottissime dimensioni (un filo con sezione nell'ordine dei micrometri) esposta alla corrente. In base alla differenza di tensione necessaria a mantenere costante la temperatura della sonda si può misurare lo scambio termico tra fluido e sensore, e quindi la velocità del flusso.\par
+Le principali applicazioni dell'anemometro a filo caldo sono quelle dello studio della turbolenza: la ridotta dimensione della sonda consente una risoluzione spaziale molto elevata, così come una risoluzione temporale maggiore di qualsiasi altro anemometro (la variazione di temperatura, per una sonda di massa ridotta, è quasi istantanea), caratteristiche che si prestano in maniera particolare allo studio di fenomeni che variano rapidamente nel tempo come quelli turbolenti.\par
+I principali difetti di questo anemometro risiedono nel suo utilizzo a velocità ridotte, quando il campo di temperatura del fluido circostante è modificato dalla presenza stessa dell'anemometro, mediante i vortici convettivi generati dalla differente temperatura tra la sonda e il fluido. Inoltre l'anemometro a filo caldo, a differenza dell'anemometro ad ultrasuoni, restituisce solamente un'informazione sul modulo della componente di velocità del flusso perpendicolare alla resistenza, ma nessuna informazione sulla direzione del vettore velocità. Esistono comunque anemometri a filo caldo che utilizzano tre resistenze perpendicolari tra loro, in modo da restituire un'informazione completa sulla corrente locale.
+\subsection{Anemometro ad ultrasuoni}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.3\linewidth]{ua/ultrasound.jpg}
+	\caption{Un anemometro a ultrasuoni che dispone di tre coppie di sensori}
+\end{figure}
+L'anemometro ad ultrasuoni sfrutta il differente tempo impiegato da impulsi di onde acustiche (a frequenze superiori ai 20 kHz) in presenza di un campo di velocità. Utilizzando tre coppie di sensori (che funzionano contemporaneamente da sorgenti e ricevitori) disposte in tre direzioni mutuamente ortogonali, l'anemometro ad ultrasuoni è in grado di determinare componente per componente il vettore velocità locale.\par
+Le limitazioni di questo strumento sono dovute principalmente alla sua dimensione: la risoluzione spaziale è ridotta così come quella temporale, e la dimensione della sonda la rende particolarmente invasiva. Per questo motivo è raramente usato per lo studio di fenomeni turbolenti, mentre lo si preferisce per l'economicità e per la praticità quando è necessario misurare con precisione un campo macroscopico di velocità per tempi notevolmente lunghi, come nel caso dello studio dei venti in aeroporti o in regioni dove andare ad installare turbine eoliche.
+\newpage
+\section{Anemometro a filo caldo}
+\begin{figure}[htbp]
+	\centering
+	\includegraphics[width=0.8\columnwidth]{cilindro_in_galleria.jpg}
+	\caption{Camera di prova della galleria del vento con cilindro. Sono visibili sia l'anemometro a filo sia il tubo di Pitot utilizzato per la verifica della velocità indisturbata.}
+\end{figure}
+Il lavoro effettuato con l'anemometro a filo caldo è stato suddiviso in due giornate: una prima di calibrazione seguita da una seconda di acquisizione dei dati sulla scia.
+\subsection{Datarate}
+L'anemometro a filo caldo è uno strumento di misura caratterizzato da un'elevata risoluzione temporale, e quindi un'alta frequenza di acquisizione dei dati. Per questo motivo si è dovuto procedere ad una stima teorica delle grandezze temporali di riferimento dei fenomeni turbolenti presenti, allo scopo di verificare quali comportamenti del flusso fossero visibili e quali, invece, risultassero troppo rapidi anche per l'anemometro a filo caldo.\par
+Nel caso in esame la scala integrale ha una frequenza caratteristica il cui ordine può essere approssimato con
+$$f_{I} = \frac{1}{\tau_{I}} = \frac{U}{D} = 10^2\,\textrm{Hz}$$
+mentre la scala di Taylor ha frequenza dell'ordine di
+$$f_{T} = \frac{1}{\tau_{T}} = \frac{U}{D \cdot \sqrt{Re}} \approx 10^4\,\textrm{Hz}$$
+L'anemometro ha una risoluzione spaziale dell'ordine della lunghezza del filo (e quindi di $10^{-3}$ m nel caso in esame), troppo piccola sia per l'individuazione dei vortici di scala di Kolmogorov che per quelli di scala di Taylor. In ogni caso, la massima frequenza di acquisizione dei dati con l'anemometro a filo caldo non arriva all'ordine $10^{4}$ Hz della scala di Taylor, che risulta quindi inosservabile. È stata allora scelta come frequenza di acquisizione $f_c = 10^3$ Hz, accettando di poter distinguere solo i fenomeni di scala integrale. \par% \textbf{Eventuale reference sulle scale?}\par
+In assenza del cilindro ci si aspetta un flusso prevalentemente laminare, con un indice di turbolenza inferiore al 3\% dato dalla galleria stessa. Il datarate di 1000 Hz continua ad essere quindi più che sufficiente anche per la calibrazione.\par
+Una volta fissato il datarate, si può stimare quale sia il necessario tempo di acquisizione dei dati per le diverse prove. Data la presenza di fenomeni turbolenti, per l'analisi della scia del cilindro saranno necessari più dati per ottenere valori significativi. Le misure sono state effettuate con un tempo di acquisizione di 4 secondi per la calibrazione e di 20 secondi per l'analisi della scia. Si può osservare dai grafici riportati in \cref{fig:datarate_hwa} come questi tempi siano accettabili, in quanto il valore medio della grandezza misurata (la tensione necessaria a mantenere la temperatura della sonda costante) si stabilizza per un numero di campioni inferiore a quello massimo usato.
+\begin{figure}[!ht]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\linewidth]{hwa/datarate_calib}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\linewidth]{hwa/datarate_scia}        
+    \end{subfigure}
+    \caption{V$_{\textrm{media}}$ al variare del numero di campioni per flusso libero (sinistra) ed in presenza del cilindro (destra),\\ \xd = 1, \yd = 0.25}
+    \label{fig:datarate_hwa}
+\end{figure}
+
+\subsection{Calibrazione}
+Durante la prima giornata di lavoro si è operato per cercare la legge di calibrazione dell'anemometro, registrando i dati di tensione misurati dall'oscilloscopio a valori di velocità della corrente d'aria noti. La velocità in galleria del vento è stata misurata mediante un tubo di Pitot, montato all'interno della galleria stessa, posto ad una distanza dall'anemometro a filo caldo sufficientemente elevata per garantire l'assenza di interferenze tra i due strumenti. Sia il tubo di Pitot che l'anemometro sono stati comunque posti in corrispondenza della sezione centrale della camera di prova e in prossimità dell'asse, sezione in cui il campo di velocità risulta essere uniforme.\par
+L'acquisizione dei dati è avvenuta in due fasi: nella prima la velocità è stata progressivamente aumentata da 2 m/s a valori prossimi ai 30 m/s, avendo avuto cura di infittire l'acquisizione dei dati nell'intervallo di velocità comprese tra 13 m/s e 17 m/s, in quanto è attesa una variazione di pendenza della funzione che collega differenza di tensione e velocità del flusso; nella seconda si è invece diminuita la velocità per riportarsi a galleria ferma. In tutti i casi si è atteso, dopo aver operato sul controllo del numero di giri del motore della galleria, che il flusso raggiungesse un regime stazionario.\par
+%\subsection{Analitico}
+% Cosa abbiamo fatto dal punto di vista pratico (velocità a cui abbiamo operato, risultati che abbiamo registrato, tecnica di rilevazione), i risultati ottenuti (A, B, n ottimale). Grafici per giustificare.
+Dalle equazioni di bilancio energetico, supponendo trascurabili gli effetti conduttivi e di irraggiamento (ipotesi valida per velocità sufficientemente lontane dallo zero), si riesce ad ottenere una legge di funzionamento dell'anemometro del tipo $$\Delta V ^ 2 = A + B u^{n}$$ con $\Delta V$ differenza tra la tensione misurata a velocità $u$ e valore di riferimento della tensione acquisita a galleria ferma; $n$ compreso nell'intervallo tra 0.45 e 0.55. Una migliore approssimazione prevede l'utilizzo di due distinti parametri $A$ e $B$ per velocità rispettivamente inferiori e superiori a 15 m/s circa.\par
+Di ciascuno dei campioni acquisiti si è calcolato il valor medio e la deviazione standard, e sono stati poi interpolati con una legge lineare ai minimi quadrati nel piano ($\Delta V ^ 2, u^n$), effettuando sia un'interpolazione ad una retta per tutti i valori di velocità, sia un'interpolazione a due rette, distinguendo il caso di velocità $u < 13.5$ m/s da quello $u \geq 13.5$ m/s.
+\begin{figure}[!ht]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{hwa/curve_calibrazione_045}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{hwa/curve_calibrazione_050}
+	\end{subfigure}
+	\caption{Differenti curve di calibrazione al variare dell'esponente \textit{n}}
+	\label{fig:calibrazione_hwa}
+\end{figure}
+
+Dai grafici di \cref{fig:calibrazione_hwa} si osserva come l'approssimazione a due rette sia sempre migliore di quella a retta singola nella zona di interesse. Dall'analisi dello scarto quadratico medio si osserva inoltre che la migliore approssimazione si ha nel caso $n = 0.5$, per il quale si ottiene:
+\begin{displaymath}
+	u < 13.2 \textrm{ m/s} \qquad A_1 = -5.3229 \textrm{ V}^2 \qquad B_1 = 4.3905 \textrm{ V}^2 \sqrt{\textrm{s m}^{-1}}
+\end{displaymath}
+\begin{displaymath}
+	u \ge 13.2 \textrm{ m/s} \qquad A_2 = -8.5433 \textrm{ V}^2 \qquad B_1 = 5.3394 \textrm{ V}^2 \sqrt{\textrm{s m}^{-1}}
+\end{displaymath}\par
+Come si era già supposto la legge non è valida per velocità ridotte, come si può osservare dal valore negativo dell'intercetta su un asse di una grandezza strettamente positiva. Per questo motivo, si dovranno considerare poco attendibili i dati registrati quando le velocità risultano ridotte.
+
+\subsection{Misure di scia}
+Nella seconda sessione di lavoro si è operato mantenendo costante la velocità della corrente a 10 m/s, inserendo all'interno della camera di prova un cilindro circolare di diametro D = 0.1 m e lunghezza L = 0.4 m. Queste dimensioni risultano in un aspect ratio di $AR = 4$ e un blockage ratio relativo alla sezione della galleria di $BR = 6.3 \%$, giustificando l'uso di \cite{braza06} come reference (dato l'elevato blockage ratio e il basso aspect ratio sia per questa analisi sia per il \textit{paper} citato).\par
+Si può definire per comodità un sistema di riferimento avente origine nel bordo di uscita del cilindro, in corrispondenza della sezione centrale, asse \textit{x} lungo la direzione della corrente indisturbata, asse \textit{z} in direzione dell'asse del cilindro, ed asse \textit{y} normale ad entrambi.\par
+Si è poi proceduto a misurare il campo di velocità lungo la direzione \textit{y}, nell'intervallo di \yd $\in$ [-0.5; 2] in \xd = 1 ed \mbox{\xd = 3}, avendo infittito le misurazioni nelle regioni vicine al cilindro. Inoltre, si è proceduto alla misura del campo di velocità lungo la \textit{centerline}, allo scopo di verificare quanto fosse estesa la scia, ed osservare se potesse avvenire un recupero in lunghezze ridotte.\par
+Durante le misure, la sonda è risultata leggermente disallineata lungo \textit{z} rispetto alla sezione centrale del cilindro.\par
+% Cosa abbiamo fatto praticamente, i dati raccolti, il campo medio, le analisi fatte di dati.
+Una volta acquisiti, i dati sono stati convertiti in misure istantanee di velocità. I valori di velocità sono risultati essere quasi sempre inferiori a 10 m/s, e questo ha giustificato l'utilizzo della legge di calibrazione a due interpolazioni, ed in particolar modo il ramo per $u < 13.2$\mps.\par
+Si è poi proceduto al calcolo del campo medio e dei momenti statistici (deviazione standard, simmetria e kurtosis), allo scopo di ricostruire il campo di velocità e di distinguere, se presenti, regioni a comportamento differente del flusso. Particolare attenzione è stata data allo studio del segno del terzo momento statistico centrato, che fornisce informazioni sul processo di trasferimento di energia tra scale.
+\clearpage
+\subsubsection{Campo medio}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_campo_medio_1D}
+		\label{hwa_campo_medio_1D}
+		\caption{Campo medio di velocità in \textit{y}, \xd = 1}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_campo_medio_3D}
+		\label{hwa_campo_medio_3D}
+		\caption{Campo medio di velocità in \textit{y}, \xd = 3}
+	\end{subfigure}
+\end{figure}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Dall'analisi del campo medio di velocità per \xd = 1 si possono distinguere tre zone differenti: una prima, compresa tra \yd = -0.5 ed \yd = 0.5, di ricircolazione, in cui la velocità media si mantiene bassa (il valore di velocità misurato dall'anemometro è però poco attendibile, per quanto già detto sull'approssimazione di trascurabili effetti convettivi); una seconda zona, compresa tra \yd = 0.9 ed \yd = 0.5, in cui l'elevata $\sigma$ (nel grafico rappresentata dalla barra orizzontale) evidenzia un comportamento turbolento del flusso, generato dal distacco dello strato limite causato dal repentino calo del $C_P$ (\cite[fig.~4]{roshko61}); ed una terza zona oltre \yd = 0.9, in cui la velocità aumenta oltre il valore della corrente indisturbata, come evidenziato in \cite[fig.~4a]{braza06}, in cui si osserva un infittimento delle linee di corrente dovuto alla presenza della zona di ricircolazione.
+	\end{minipage}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Il campo medio presenta notevoli differenze per \xd~=~3: si osserva un aumento della $\sigma$ nella zona in ombra del cilindro, il picco di velocità è ridotto e traslato verso l'alto, e la zona di dispersione dei dati è aumentata in dimensione, fino ad arrivare a \yd = 1.5; anche in questo caso, come precedentemente osservato, la zona di dispersione termina subito prima del picco di velocità.\par
+		Il campo medio tuttavia risulta essere più regolare rispetto a quello ottenuto in \xd = 1 riscontrando notevoli aumenti di velocità nella zona che precedentemente era di ricircolazione. Tale zona di ricircolazione è completamente scomparsa a favore di una aumentata zona di turbolenza, anche nella regione precedentemente in ombra del cilindro, e si può notare una apparente asimmetria dei dati rispetto ad y = 0, dovuta ad errori di misurazione e velocità troppo bassa per essere misurata dall'anemometro.
+	\end{minipage}
+\end{minipage}
+\newpage
+\subsubsection{Indice di turbolenza}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_indice_turbolenza_1D} % xlim([0, 50]) e x in percentuale.
+		\label{hwa_indice_turbolenza_1D} 
+		\caption{Indice di turbolenza in \textit{y}, \xd = 1}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_indice_turbolenza_3D} % xlim([0, 50]) e x in percentuale.
+		\label{hwa_indice_turbolenza_3D}
+		\caption{Indice di turbolenza in \textit{y}, \xd = 3}
+	\end{subfigure}	
+\end{figure}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Dall'analisi dell'indice di turbolenza si può trovare conferma della suddivisione del campo ipotizzata con l'analisi del campo medio. Difatti, osservando l'andamento dell'indice $I_{\sigma}$ per \xd = 1 si notano le stesse caratteristiche osservate nel campo medio: una prima regione, che si estende per \yd $\textgreater$ 1, in cui la turbolenza è bassa e comparabile con quella di un flusso indisturbato ($I_\sigma < 5\%$); una seconda regione puramente turbolenta, estesa tra \yd = 1 ed \yd~=~0.5, in cui la velocità media si mantiene comunque diversa da zero, che risulta essere lo \textit{shear layer}; una terza zona, precedentemente denominata zona di ricircolazione, in cui si ha un valore mediamente modesto dell'indice di turbolenza, con un minimo in prossimità della \textit{centerline}. Si può immaginare che anche gli altri indici caratteristici della turbolenza (\textit{skewness} e \textit{kurtosis} in particolare) presenteranno un andamento decrescente nella stessa zona.
+	\end{minipage}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Dal confronto del campo per \xd = 3 si osserva la scomparsa della zona di normalizzazione a favore dell'aumento della zona di turbolenza. Questo risultato è in accordo con quanto già osservato in \cite{braza06} nella fig.~4a, per il quale la zona di normalizzazione (che nel campo mediato in fase appare come una zona di ricircolazione) si estende fino a \xd~$\approx$~1.3, per un valore del numero di Reynolds di $Re = 1.4\cdot10^5$. Anche dall'analisi dell'indice di turbolenza si può apprezzare come la regione di flusso indisturbato si sia ridotta in dimensione, terminando a \yd = 1.5, invece del precedente \yd = 1. Si nota inoltre lo stesso errore nella distribuzione dei dati, che risulta non simmetrica rispetto alla centerline. Si vedrà in seguito che questo errore viene riscontrato in tutte le grandezze calcolate.
+	\end{minipage}
+\end{minipage}
+\newpage
+\subsubsection{Skewness}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_skewness_1D}
+		\label{hwa_skewness_1D}
+		\caption{Skewness in \textit{y}, \xd = 1}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_skewness_3D}
+		\caption{Skewness in \textit{y}, \xd = 3}
+		\label{hwa_skewness_3D}
+	\end{subfigure}
+\end{figure}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		L'analisi della skewness offre un'ulteriore conferma dei risultati dedotti dall'analisi dell'indice di turbolenza e dal campo medio. Si possono ricavare informazioni sulle zone del flusso osservate nelle precedenti analisi in \xd = 1: per \yd $\textgreater$ 1 si osserva una skewness prossima allo zero, che unita alla ridotta indice di turbolenza conferma l'ipotesi di zona di flusso laminare; una zona di aumento della skewness da valori negativi a positivi, che rappresenta la regione di shear layer; ed una terza zona, coincidente con quella in ombra del cilindro, in cui la skewness si mantiene positiva ma con andamento decrescente, che unita alle informazioni su campo medio (ridotto) e indice di turbolenza ($\approx$ 40\%) confermano ancora una volta quanto supposto sulla zona di normalizzazione.
+%		\begin{centering}[b!]
+		\\ \\
+		\includegraphics[width=\columnwidth]{hwa/vel_1D_100}
+		\captionof{figure}{Segnale di velocità all'interfaccia tra flusso laminare e shear layer, \xd = 1}
+		\label{vel_1D_100}
+%		\end{centering}
+	\end{minipage}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Per \xd = 3, invece, si osserva un aumento della dimensione dello \textit{shear layer} ed una traslazione dello stesso fino ad arrivare a \yd = 1.5. Inoltre, la scomparsa della zona di normalizzazione è giustificata dal continuo aumento della \textit{skewness}, anche nella zona in ombra del cilindro.\par
+		Si verifica che, sia per \xd = 1 che per \xd = 3, in corrispondenza dell'interfaccia tra il flusso laminare e lo shear layer si ottiene un minimo locale della skewness. Questo fenomeno si può apprezzare anche dalla sola osservazione del segnale di velocità registrato all'interfaccia (in \cref{vel_1D_100}): il segnale si allontana dal suo valor medio per assumere valori minori molto frequntemente, segnale che l'interfaccia si è spostata fino a comprendere il punto analizzato dalla sonda. Inoltre si può dimostrare che l'andamento della skewness è collegato al trasferimento di energia tra scale tramite la sua derivata: laddove crescente (e quindi a derivata positiva), come in questo caso nello shear layer, si ha il fenomeno della cascata diretta ovvero il trasferimento di energia da scale grandi a quelle più piccole, favorendone la crescita; viceversa, nella zona in ombra del cilindro, si ha l'immissione di energia nel flusso con la generazione di strutture vorticose grandi. Si apprezza come, per \xd = 3, sia scomparsa la zona di immissione di energia, diventata uniformemente una zona di trasferimento.
+	\end{minipage}
+\end{minipage}
+\newpage
+\subsubsection{Kurtosis}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_kurtosis_1D}
+		\label{hwa_kurtosis_1D}
+		\caption{Kurtosis in \textit{y}, \xd = 1}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+				\includegraphics[width=\columnwidth]{hwa/hwa_kurtosis_3D}
+				\label{hwa_kurtosis_3D}
+				\caption{Kurtosis in \textit{y}, \xd = 3}
+	\end{subfigure}
+\end{figure}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		L'analisi della \textit{kurtosis} offre una riprova di quanto già osservato. In particolare, per \xd = 1 si individuano nuovamente tre regioni distinte del campo, che corrispondono in natura e posizione con quelle individuate precedentemente. Delle conclusioni originali si possono comunque estrarre dall'andamento di $k$: il valore massimo della kurtosis è assunto in \yd = 1, ed è indice di una notevole intermittenza statistica del campo, ovvero di valori lontani dal valor medio. Unendo questo risultato con quello ottenuto dall'analisi della skewness (negativa nello stesso punto) si può giungere alla conclusione che vengono registrate frequentemente velocità maggiori di quella media. Allo stesso modo si può osservare che al confine tra la zona di normalizzazione e lo shear layer la kurtosis assume valori ridotti, e nello stesso punto la skewness è ridotta.
+	\end{minipage}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Le stesse considerazioni valgono nel caso \xd = 3. Si osserva un aumento della zona di \textit{shear layer} osservato dall'aumento di kurtosis già per valori di \yd = 1.5 e una riduzione della zona di normalizzazione indicata da un valore di $k$ ancora in diminuzione per \yd bassi.
+	\end{minipage}
+\end{minipage}
+\newpage
+\subsubsection{Studio dell'evoluzione della scia}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_campo_medio_mediana}
+		\label{hwa_campo_medio_mediana}
+		\caption{Campo medio di velocità in \textit{x}, \yd = 0}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{hwa/hwa_indice_turbolenza_mediana}
+		\label{hwa_indice_turbolenza_mediana}
+		\caption{Indice di turbolenza in \textit{x}, \yd = 0}		
+	\end{subfigure}	
+\end{figure}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Una misurazione del campo aerodinamico è stata effettuata per determinare l'evoluzione spaziale della scia (limitandosi a semplici osservazioni sulla lunghezza della zona turbolenta e quindi sulla necessaria separazione tra due corpi tozzi). Sono stati calcolati e analizzati gli andamenti in x del campo medio e dell'indice di turbolenza.\par
+		Si nota dall'andamento del campo medio che la velocità parte da valori prossimi allo zero in corrispondenza del teorico punto di ristagno posteriore, per poi salire linearmente in un primo tratto sino ad \xd = 1, e quindi seguire un andamento meno regolare. Si può osservare come la regione di crescita lineare della velocità termini all'incirca dove si era individuato il confine della zona di normalizzazione del flusso, fenomeno che conferma la validità dei dati già registrati. Si deve però ricordare che l'anemometro a filo caldo può dare informazioni solo sul modulo della velocità e non sulla direzione. A priori non si può quindi determinare il segno della corrente, che si vedrà poi, analizzando i dati raccolti dall'anemometro ad ultrasuoni, essere diretta in verso opposto a quella della corrente indisturbata.
+	\end{minipage}
+\end{minipage}
+\begin{minipage}[t]{0.5\textwidth}
+	\centering
+	\begin{minipage}[t]{0.95\textwidth} \onehalfspacing
+		Un simile comportamento si osserva dall'analisi dell'indice di turbolenza, nel quale si ha un valore decrescente fino ad \xd = 1, che poi torna ad aumentare fino ad \xd = 2 per poi decrescere nuovamente. Si osserva soprattutto come l'indice di turbolenza tenda a zero per distanze elevate, ma come la velocità non si stabilizzi sul valore indisturbato, a dimostrare come la distanza di 4.5D (la massima possibile, data la lunghezza della camera di prova) non sia sufficiente al recupero della scia. Infatti, in letteratura (ad esempio in \cite{roshko61}, \cite{williamson96}, \cite{braza06}), ci si riferisce alla regione  che termina in \xd = 10 come \textit{near wake}, apprezzando quindi come il recupero della scia avvenga a distanze molto elevate dal corpo.
+	\end{minipage}
+\end{minipage}
+\newpage
+\section{Anemometro a ultrasuoni}
+\subsection{Datarate}
+\begin{figure}[h!]
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\linewidth]{ua/datarate_calib}
+    \end{subfigure}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\linewidth]{ua/datarate_scia}        
+    \end{subfigure}    
+    \caption{Valori medi al variare del numero di campioni per flusso libero (sinistra) ed in presenza del cilindro (destra).}
+    \label{fig:datarate_ua}  
+\end{figure}
+Così come effettuato per l'anemometro a filo caldo, si è voluto determinare il numero di campioni (e di conseguenza la durata delle misurazioni) necessario ad ottenere risultati attendibili utilizzando l'anemometro ad ultrasuoni.
+I dati sono stati acquisiti dall'anemometro con una frequenza di campionamento pari a 50 Hz. Per quanto visto nella sezione relativa all'HWA, questa frequenza potrebbe non essere sufficiente a registrare la scala integrale, mentre sicuramente non saranno osservabili le scale minori di Taylor e di Kolmogorov.\par
+Le misure sono state eseguite per 20 secondi nella giornata di calibrazione e per 30 secondi nella giornata successiva, con il cilindro in galleria. Si verifica dai grafici di \cref{fig:datarate_ua} che questi tempi sono sufficientemente elevati da ottenere valori medi validi.
+\subsection{Calibrazione}
+A differenza dell'HWA, l'anemometro ad ultrasuoni restituisce in output un valore di velocità, rendendo non necessaria una procedura di calibrazione dello strumento. Ciononostante, a causa di un difetto sullo strumento, una delle coppie di sensori si trova ad una distanza leggermente superiore a quella di fabbrica, e quindi l'anemometro restituisce velocità leggermente diverse da quella effettiva, misurata con un tubo di Pitot.\par
+Per effettuare una calibrazione accurata, sia il tubo di Pitot sia l'anemometro sono stati posti nella sezione centrale della camera di prova, in cui il campo di velocità risulta uniforme, sufficientemente lontani l'uno dall'altro per evitare interferenza reciproca.
+\begin{figure}[ht!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_calib_vel}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_calib_ang}
+	\end{subfigure}
+	\caption{}
+	\label{fig:cal_ua}
+\end{figure}\par
+Si nota dai risultati riportati in \cref{fig:cal_ua} come sopra ai 20 m/s le misurazioni siano affette da errori notevoli rispetto alle misurazioni a velocità minori, causati dalle vibrazioni provocate dal braccio dello strumento difettoso. I valori di velocità registrati per la galleria operante a più di 20 m/s sono quindi stati trascurati nell'interpolazione, semplificazione che non influenza i risultati ottenuti in quanto si opererà sempre a velocità minori.\par
+La retta interpolatrice risulta avere un'intercetta trascurabile ed un coefficiente angolare $m = 0.912$. Pertanto, la legge di calibrazione risulta essere:
+\begin{displaymath}
+	V_{vera} = 0.912\cdot V_{ua}
+\end{displaymath}\par
+L'anemometro restituisce inoltre un'informazione sull'angolo tra una direzione caratteristica (che nella configurazione di riferimento coincide con quella del flusso indisturbato) e la direzione della velocità indisturbata. Per verificare la correttezza dell'informazione dell'anemometro, quest'ultimo è stato ruotato di angoli noti, confrontando poi l'angolo indicato con quello vero.
+La retta interpolatrice risulta avere una pendenza prossima a 45$^{\circ}$ (si ha come coefficiente angolare $m = 0.998$), con un'intercetta trascurabile. Come tale, si possono assumere esatti i valori di angolo restituiti dall'anemometro.
+\subsection{Misure di scia}
+Nel corso della seconda giornata sono state effettuate le stesse misurazioni eseguite con l'HWA, in modo da poter confermare quanto visto con il primo strumento.\par
+L'anemometro ad ultrasuoni, sia per l'invasività della sonda sia per le vibrazioni del braccio di supporto  della sonda stessa, ha registrato dati con un errore notevole. Per questo motivo, sono stati rimossi i dati registrati a più di 3 $\sigma$ dal valor medio.
+\clearpage
+\subsubsection{Campo medio}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.4\columnwidth]{ua/ua_quiver}
+	\label{ua_campo_medio_quiver}
+	\caption{Campo medio di velocità}
+\end{figure}
+Il campo medio ottenuto con l'anemometro ad ultrasuoni evidenzia la presenza delle stesse tre regioni osservate con l'analisi del campo mediante HWA: una zona di flusso indisturbato, in cui la velocità aumenta leggermente in accordo con la teoria potenziale; una zona di turbolenza, in cui il modulo della velocità diminuisce; ed un'ultima zona di normalizzazione del flusso coincidente, per \xd = 1, con la zona di flusso in ombra del cilindro. Non essendo l'anemometro ad ultrasuoni influenzato da basse velocità, si osserva come il modulo della velocità si stabilizzi effettivamente su valori bassi ma non nulli. Un'importante conclusione si può ricavare dall'analisi della sola componente $u$ della velocità (risultato impossibile da ricavare dai dati dell'HWA): si nota come la velocità in direzione della corrente indisturbata scenda effettivamente a valori negativi, e si può quindi confermare come questa zona di normalizzazione sia effettivamente una zona di ricircolazione, in accordo con quanto mostrato da \cite{braza06}.\par
+Il campo ottenuto in $\xd = 3$ è ancora una volta simile a quello ottenuto con l'utilizzo dell'HWA, anche se sono stati registrati valori leggermente superiori di velocità. La scomparsa della zona di ricircolazione è confermata dai valori di $u$ che si mantengono sempre positivi, anche nella zona precedentemente in ombra del cilindro. Si nota inoltre come siano diventate importanti le componenti di velocità diverse dalla $u$ nella zona di shear layer e di normalizzazione, confermando la natura fortemente tridimensionale della turbolenza. Inoltre si può apprezzare in questo caso un andamento simmetrico dei dati rispetto alla centerline, confermando che è stato commesso un errore nella registrazione dei dati con l'anemometro a filo caldo.
+\begin{figure}[hb!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_campo_medio_1D}
+		\caption{Campo medio lungo y, \xd = 1}
+		\label{ua_campo_medio_1D}
+	\end{subfigure}\qquad
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_campo_medio_3D}
+		\caption{Campo medio lungo y, \xd = 3}
+		\label{ua_campo_medio_3D}
+	\end{subfigure}
+\end{figure}
+\newpage
+\subsubsection{Indice di turbolenza}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.4\columnwidth]{ua/ua_iturbe}
+	\label{ua_iturbe}
+	\caption{Indice di turbolenza}
+\end{figure}
+Anche dall'analisi dell'indice di turbolenza si possono apprezzare le tre distinte zone del flusso. In particolare, si può osservare come l'indice di turbolenza misurato risulti in generale minore di quello osservato con l'anemometro a filo caldo. Questo risultato non è dato dalla correzione a 3 $\sigma$ effettuata sui dati (sono stati usati infatti i dati grezzi provenienti direttamente dall'anemometro, semplicemente corretti con la legge di calibrazione), ma dalla peggiore risoluzione spaziale e temporale dell'anemometro ad ultrasuoni rispetto a quello a filo caldo, oltre che dall'invasività della sonda stessa. Si può quindi iniziare ad apprezzare quali siano le debolezze di questo strumento, che non riesce ad osservare fenomeni microscopici come le turbolenze, ma riesce meglio di altri e con maggiore facilità a determinare informazioni utili su campi medi.\par
+Confrontando i singoli andamenti degli indici di indice di turbolenza, si possono osservare notevoli differenze: per \xd = 1 l'anemometro a filo caldo registra un picco di turbolenza a \yd = 0.5, picco che viene completamente perso nell'anemometro a ultrasuoni, così come viene perso il minimo locale di turbolenza in corrispondenza della mezzeria del cilindro. Questi risultati, come già affermato, sono dovuti principalmente alla invasività della sonda (la cui dimensione è comparabile con quella del cilindro e della scia), oltre che alla ridotta risoluzione spaziale e temporale dell'anemometro ad ultrasuoni. Bisogna inoltre tener presente che lo strumento utilizzato in fase di misurazione è risultato difettoso.\par
+Per \xd = 3, invece, si osserva un andamento più simile a quello registrato con il filo caldo, ovvero una progressione graduale dalla zona di flusso laminare (in cui il flusso presenta indice di turbolenza comparabile con quella della corrente in uscita dalla galleria) alla zona di maggior turbolenza, con massimo assunto proprio in mezzeria. Tuttavia, i valori dell'indice di turbolenza risultano quasi dimezzati rispetto a quelli misurati con uno strumento dedicato quale l'hotwire.
+\begin{figure}[hb!]
+	\centering
+	\begin{subfigure}{0.35\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_indice_turbolenza_1D}
+		\caption{Campo medio lungo y, \xd = 1}
+		\label{ua_indice_1D}
+	\end{subfigure}\qquad
+	\begin{subfigure}{0.35\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_indice_turbolenza_3D}
+		\caption{Campo medio lungo y, \xd = 3}
+		\label{ua_indice_3D}
+	\end{subfigure}
+\end{figure}
+\clearpage
+\subsubsection{Skewness e kurtosis}
+\begin{figure}[ht!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_skewness_1D}
+		\caption{Skewness lungo y, \xd = 1}
+		\label{ua_skewness_1D}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_skewness_3D}
+		\caption{Skewness lungo y, \xd = 3}
+		\label{ua_skewness_3D}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_flatness_1D}
+		\caption{Kurtosis lungo y, \xd = 1}
+		\label{ua_kurtosis_1D}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{ua/ua_flatness_3D}
+		\caption{Kurtosis lungo y, \xd = 3}
+		\label{ua_kurtosis_3D}
+	\end{subfigure}
+\end{figure}
+Come previsto, i dati dei momenti statistici di ordine maggiore ottenuti con l'anemometro ad ultrasuoni sono privi di qualsiasi significato, risultando in andamenti che non possono rispecchiare il fenomeno fisico, oltre a non trovare alcun riscontro con i dati ottenuti dall'anemometro a filo caldo. Ad esempio, si può osservare come, per la skewness in \xd = 1, si abbia un aumento progressivo della \textit{s} ma non nell'intervallo spaziale che si era determinato essere lo shear layer. Anche per quanto riguarda l'andamento della kurtosis si notano errori grossolani: il valore di \textit{k} si mantiene compreso tra 2.5 e 3.5, a fronte di un andamento tra 1 e 7 per l'anemometro ad ultrasuoni nel caso \xd = 1, mentre nel caso \xd = 3, oltre ad un massimo isolato a \yd = 1.4, si osserva una regione di kurtosis prossima a 3 in corrispondenza di una skewness ridotta, che sembrerebbe indicare una regione di flusso laminare, ovviamente incompatibile con il problema fisico. 
+\newpage
+\section{Confronto tra HWA ed UA}
+In questa sezione si confronteranno i risultati ottenuti con i due anemometri. L'analisi verrà effettuata solo sul campo medio e sull'indice di turbolenza, date le considerazioni già fatte sulla validità dei momenti statistici di ordine superiore ottenuti dall'UA.
+\subsection{Campo medio}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{confronto/confronto_medio_1D}
+		\caption{Confronto tra HWA ed UA, \xd = 1}
+		\label{fig:confronto_medio_1D}
+	\end{subfigure}\qquad
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{confronto/confronto_medio_3D}
+		\caption{Confronto tra HWA ed UA, \xd = 3}
+		\label{fig:confronto_medio_3D}		
+	\end{subfigure}
+	\caption{Confronto sui campi medi}
+	\label{fig:confronto_medio}
+\end{figure}
+Per \xd = 1, come riportato in \cref{fig:confronto_medio_1D}, si osserva come entrambi gli anemometri restituiscano dei valori del modulo di velocità compatibili. Si osserva in particolare l'andamento simile fino a \yd = 0.5, oltre il quale l'errore commesso dall'HWA in presenza di ridotta velocità invalida i risultati.\par
+Per quanto riguarda il campo medio in \xd = 3, esposti in \cref{fig:confronto_medio_3D}, si osserva ancora una volta come i dati siano simili tra i due anemometri, per poi discostarsi per \yd $\le$ 0.5. Si conferma di aver commesso un errore in fase di misurazione con l'HWA, essendo i dati registrati non simmetrici rispetto al piano di simmetria.
+\subsection{Indice di turbolenza}
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{confronto/confronto_std_1D}
+		\caption{Confronto tra HWA ed UA, \xd = 1}
+	\end{subfigure}\qquad
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{confronto/confronto_std_3D}
+		\caption{Confronto tra HWA ed UA, \xd = 3}
+	\end{subfigure}
+	\caption{Confronto sull'indice di turbolenza}
+	\label{fig:confronto_sigma}
+\end{figure}
+Dal confronto sull'indice di turbolenza $I_\sigma$ in \xd = 1, si nota ancora una volta la similitudine tra i due andamenti per \yd $\ge$ 0.5, mentre si osserva come i risultati siano discordanti nella regione in ombra del cilindro. Si osserva infatti una marcata differenza di andamento, in quanto l'HWA individua un massimo nello shear layer, mentre per l'UA l'indice di turbolenza aumenta fino alla mezzeria. Dal confronto con le references (\cite{elmakdah13}) l'andamento più plausibile è quello restituito dall'HWA.\par
+Per \xd = 3 si nota un andamento simile tra i due set di dati, ma con un notevole errore percentuale quasi costante lungo tutte le \yd. Ancora una volta si osserva l'andamento simmetrico rispetto alla centerline dei dati relativi all'UA, mentre è assente per l'HWA.
+\clearpage
+\section{Analisi temporale dei segnali di velocità}
+Data l'elevata risoluzione temporale dell'anemometro a filo caldo, i dati registrati possono essere usati per ottenere informazioni sulle scale temporali della turbolenza dall'analisi dello spettro dei segnali. Analizzando i segnali si è osservato un contributo elevato in tutte le misurazioni per frequenze inferiori a 1 Hz, causato dalla vibrazione elastica del braccio di alluminio di supporto del cilindro: per questo motivo i segnali sono stati filtrati con un filtro passa-alto a frequenza di cutoff pari a 1.5 Hz.\par
+Il fenomeno fisicamente atteso è quello del rilascio periodico di vortici (\textit{vortex shedding}), che origina la scia di vortici di von Karman, che può essere visualizzata anche in una simulazione numerica come \cite{lopez_cyl}. Questo fenomeno avviene ad una frequenza caratteristica che può essere stimata mediante la formula empirica
+$$ St = \frac{f D}{u_{\infty}} = 0.198 \Big(1-\frac{19.7}{Re}\Big) $$
+che nel caso in esame restituisce una frequenza di shedding $f_{sh} = 19.8$ Hz ed un relativo numero di Strouhal di 0.198. Si può osservare che questo valore di Strouhal è sufficientemente vicino a quello determinato per il problema analizzato in \cite{braza06}, essendo la frequenza adimensionale dipendente dal solo numero di Reynolds. Una ulteriore conferma della validità di questa formula empirica può essere vista in \cite[fig.~5]{roshko61}.\par
+Gli andamenti dell'autocorrelazione presentano una marcata divergenza per $\tau \to \tau_{max} = 20$ s, dovuto interamente ad errori di natura numerica nella definizione della funzione di autocorrelazione utilizzata, e non ad un reale andamento di $\rho_x(\tau)$.
+\subsection{Flusso esterno}
+\begin{figure}[h]
+	\includegraphics[width=\linewidth]{spettro/laminare}
+	\caption{Andamenti caratteristici in tempo e frequenza, \xd = 1, \yd = 2}
+\end{figure}
+Il primo segnale analizzato è stato quello registrato in \xd = 1, \yd = 2. Si è scelto questo punto come rappresentativo del campo esterno di velocità in virtù della velocità media prossima a quella indisturbata e deviazione standard ridotta.\par
+Si può apprezzare come il segnale sia, anche ad elevata distanza dal cilindro, affetto da notevole rumore. Questo rumore non ha origine da turbolenza del flusso ma consiste in rumore bianco aggiunto dal sensore, come dimostrato dalla kurtosis del segnale prossima al valore di riferimento $k_G$ = 3 per un segnale puramente rumoroso e da un contributo costante a quasi tutte le frequenze nello spettro.\par
+Dallo spettro del segnale si ricava inoltre un picco locale per frequenze comprese tra i 15 Hz ed i 20 Hz, ovvero in prossimità della $f_{sh}$ calcolata precedentemente, andamento registrato anche da \cite[fig.~2b]{braza06}. Gli altri due massimi, presenti alle frequenze di 50 Hz e di 230 Hz, non sono dovuti a fenomeni aerodinamici. Il primo picco risulta essere un'armonica a frequenza vicina al doppio della $f_{sh}$, come già osservato in \cite[pag.~351]{roshko61}, mentre il secondo picco nasce da fenomeni di natura acustica: si è osservato che il motore della galleria del vento produce un suono nell'intorno dei 230 Hz. Si osserverà come questo picco sarà presente in tutte le altre misure.\par
+Dall'autocorrelazione si può ancora una volta osservare come il segnale sia costituito principalmente dal rumore termico del sensore (risulta infatti poco correlato con se stesso, laddove un segnale turbolento avrebbe presentato una periodicità anche della $\rho(\tau)$, ed un segnale laminare avrebbe avuto $\rho = 1$ per qualsiasi valore del ritardo $\tau$), mentre dalla densità spettrale di potenza si può osservare nuovamente l'andamento con un picco locale per frequenze vicine allo shedding, ed un andamento che non segue la retta di pendenza -5/3 caratteristica dell'intervallo inerziale, come era atteso da un segnale registrato fuori dallo shear layer.
+\subsection{Shear layer}
+\begin{figure}[h]
+	\includegraphics[width=\linewidth]{spettro/shear_1D}
+	\caption{Andamenti caratteristici in tempo e frequenza, \xd = 1, \yd = 0.75}
+\end{figure}
+Sono state condotte le stesse analisi per più punti all'interno dello shear layer, allo scopo di determinare le proprietà comuni in questa regione del campo e di vedere, invece, quali grandezze sono variabili.\par
+Il primo punto del campo analizzato è stato quello in \xd = 1, \yd = 0.75, dal quale si possono osservare subito importanti risultati. Da una prima osservazione, il fenomeno risulta dominato da una dinamica oscillatoria ad elevato periodo, con frequenza nell'intervallo 0.1 $\div$ 1 Hz, causato dall'elasticità del braccio di supporto del cilindro. Risulta invece interessante il massimo locale in corrispondenza delle stesse frequenze del massimo nel caso laminare, ovvero nell'intervallo 15 $\div$ 20 Hz, caratteristico del vortex shedding. Si apprezza inoltre come la densità spettrale di potenza segua l'andamento a -5/3 teorico caratteristico dell'intervallo inerziale, come atteso per il campo nello shear layer.\par
+Dall'autocorrelazione si possono invece ottenere risultati importanti sulla frequenza di scala integrale e di Taylor del flusso. Si ha, per la scala integrale, il valore di $f_I = 58.72$ Hz, valore in linea con l'ordine di grandezza determinato nell'introduzione. Questo valore è stato determinato sull'autocorrelazione del segnale già filtrato dal passa-alto. Per la determinazione della scala temporale di Taylor, si è invece proceduto a determinare l'intercetta con l'asse $\tau$ della parabola che meglio approssima il coefficiente $\rho(\tau)$ per $\tau \to 0$. Da questo calcolo si ottiene una frequenza di scala di Taylor pari a $f_T = 148.86$ Hz, valore in disaccordo con la stima data nell'introduzione e con dati presenti in letteratura. Questo fenomeno avviene in quanto la frequenza di campionamento della sonda utilizzata non è sufficiente a registrare dati alle frequenze reali della scala di Taylor. \par\bigskip
+\begin{figure}[h]
+	\includegraphics[width=\linewidth]{spettro/shear_3D}
+	\caption{Andamenti caratteristici in tempo e frequenza, \xd = 3, \yd = 1}
+\end{figure}
+Gli stessi risultati si possono individuare nel punto \xd = 3, \yd = 1, che si è determinato essere ancora all'interno dello shear layer. Anche in questo caso si individuano gli stessi comportamenti caratteristici del flusso nel resto dello shear layer: si ha un picco dello spettro nell'intervallo di frequenze tra 15 e 20 Hz, un andamento in linea con quello della retta a -5/3 caratteristico dell'intervallo inerziale, ed una frequenza di scala integrale di 55.60 Hz, prossima a quella determinata ad un diametro. Anche in questo caso il calcolo della scala temporale di Taylor non è realistico, restituendo un valore di $f_T = 128.13$ Hz\par
+\subsection{Zona di ricircolazione}
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{spettro/ricircolo}
+	\caption{Andamenti caratteristici in tempo e frequenza, \xd = 1, \yd = 0.1}
+\end{figure}
+Come ultima analisi si è studiato l'andamento dello spettro del segnale all'interno della zona precedentemente definita come zona di ricircolazione.
+Si può osservare come all'interno di questa zona lo spettro del segnale non segua la retta con pendenza -5/3, presentando un picco sempre nell'intorno delle frequenze $f\approx16$ Hz corrispondente sempre al fenomeno del vortex shedding.
+Anche in questo si è calcolata la frequenza corrispondente alla scala integrale, che risulta essere $f_I=59.61$ Hz.
+Si è poi proceduto  con il calcolo della frequenza della scala di Taylor, la quale risulta essere sempre non coerente con i risultati attesi: si ha $f_T=171.80$ Hz.\par
+\begin{figure}[h!]
+	\includegraphics[width=\linewidth]{spettro/shear_3D_mezzeria}
+	\caption{Andamenti caratteristici in tempo e frequenza, \xd = 3, \yd = 0.1}
+\end{figure}
+Si è poi analizzato lo spettro in corrispondenza di \xd = 3, mantenendosi in \yd = 0.1. È atteso un comportamento differente dal precedente per quanto visto dalle analisi dei campi di velocità.\par
+Si può notare infatti come lo spettro segua la retta a -5/3, confermando che alla zona di normalizzazione	 sia succeduta una regione di cascata positiva, in cui i vortici grandi cedono energia alle scale vorticose minori. 
+\newpage
+\section{Confronti con riferimenti bibliografici}
+Per confermare la validità dei risultati ottenuti nelle analisi effettuate, si vuole verificare se i dati registrati trovino riscontro in letteratura.\par
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{references/campo_medio_1D}
+		\caption{Campi medi registrati in \xd = 1}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{references/catalano03_campo_medio_075D}
+		\caption{Campo medio calcolato in\\\xd = 0.75, da \cite{catalano03}}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{references/iso_u_braza06}
+		\caption{Isolinee di u/U$_{\infty}$, da \cite[fig. 4b]{braza06}}
+		\label{fig:iso_u_braza06}
+	\end{subfigure}
+\end{figure}
+Il primo confronto che si può effettuare è quello sul campo medio. Dalla simulazione numerica svolta in \cite{catalano03} (per la quale si è simulata la turbolenza con un modello LES - nel grafico indicata dalla linea continua - e con un modello URANS, e si è imposto $Re_D = 10^6$) si può osservare come l'andamento sia relativamente simile: un picco di velocità seguito da una regione in cui il flusso ha velocità ridotta. La sezione del flusso analizzata in \cite{catalano03} è più vicina al cilindro e questo, unito al più alto valore del numero di Reynolds, ha contribuito a ridurre la dimensione della regione di shear layer rispetto alle analisi sperimentali effettuate. Si può inoltre osservare come, anche in questo caso, il campo medio di velocità sia effettivamente simmetrico rispetto alla linea di mezzeria del cilindro, confermando che si è commesso un errore nella misurazione del campo con l'anemometro a filo caldo nel caso \xd = 3.\par
+Dal confronto, invece, con \cref{fig:iso_u_braza06}, si può osservare un'ulteriore conferma per l'andamento del campo medio. Data una diversa origine del sistema di riferimento, quanto misurato in \xd = 1 è indicato in figura come \xd = 1.5. Si può comunque osservare come anche in questo caso, si abbia una bolla di ricircolo in cui la velocità si mantiene in modulo ridotta e come la velocità assuma valore adimensionale di $\approx$ 0.7 per \yd = 0.5.\par
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{hwa/hwa_indice_turbolenza_1D}
+		\caption{Indice di turbolenza in \xd = 1}
+	\end{subfigure}
+	\quad
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\linewidth]{references/iso_sigma_elmakdah13}
+		\caption{Indice di turbolenza per un cilindro circolare,\\Re$_D = 5\cdot 10^4$, da \cite[fig. 5b]{elmakdah13}}
+	\end{subfigure}
+\end{figure}
+Dal confronto tra le indice di turbolenza con \cite{elmakdah13} si può confermare l'andamento registrato sperimentalmente: si può apprezzare come $I_{\sigma}$ tenda a diminuire avvicinandosi alla zona di flusso libero, e si può invece osservare come lo stesso indice abbia un massimo circa uguale al 50\% in prossimità di \yd = 0.5, come riscontrato nelle analisi effettuate. Si apprezza inoltre che, avvicinandosi alla zona di normalizzazione, la $I_\sigma$ tenda nuovamente a diminuire stabilizzandosi su valori prossimi al 35\%, così come misurato.\par
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{references/psd_shearlayer}
+		\caption{Densità spettrale di potenza\\\xd = 1, \yd = 0.75}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{references/psd_ricircolo}
+		\caption{Densità spettrale di potenza\\\xd = 1, \yd = 0.15}
+	\end{subfigure}
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\linewidth]{references/psd_braza06_2b}
+		\caption{Densità spettrale di potenza\\da \cite[fig.~2b]{braza06}}
+	\end{subfigure}
+\end{figure}\par
+Sulla densità di probabilità, invece, si può osservare come sia presente nei dati ricavati sperimentalmente e in quelli osservati in \cite{braza06} il picco della PSD per frequenze corrispondenti a quella determinata con la formula empirica, e come solo l'andamento della densità spettrale nello shear layer si allinei con la retta teorica a pendenza -5/3. Il segnale di \cite{braza06} è stato infatti registrato come segnale di pressione direttamente sulla superficie del cilindro. Il diverso valore dell'ordine di grandezza massimo della PSD tra i dati ottenuti sperimentalmente e quelli riportati nella reference è dato solamente da una diversa normalizzazione dello spettro del segnale effettuata.\par
+\begin{figure}[ht!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{hwa/hwa_campo_medio_mediana}
+		\caption{Andamento della velocità media lungo la centerline}
+	\end{subfigure}
+	\quad
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{references/u_vs_x_elmakdah13}
+		\caption{Andamento della velocità media lungo la centerline,\\Re$_D = 5\cdot 10^4$, da \cite[fig. 3a]{elmakdah13}}
+	\end{subfigure}
+\end{figure}\par
+Un ultimo confronto può essere osservato tra i dati registrati per misurare il recupero della scia. Confrontando i risultati presentati con quelli di \cite{elmakdah13}, si può osservare un andamento molto diverso: si apprezza subito come la regione di velocità negativa, presente fino a \xd $\simeq$ 0.75 nei dati di \cite{elmakdah13} venga completamente persa nell'analisi con l'HWA. Si nota comunque la crescita della velocità procedendo lungo \xd, ma con un rateo diverso: nei dati presentati si arriva a u/$U_0$ = 0.6 per \xd = 4, mentre in \cite{elmakdah13} questo stesso recupero avviene per \xd = 2.
+\section{Conclusioni}
+Per un cilindro circolare, investito da una corrente a $Re = 6.4\cdot10^4$ e quindi tale da sviluppare flusso turbolento, sono state individuate tre regioni distinte del flusso. Una prima, di ricircolazione, che si estende sicuramente fino a \xd = 1 e termina prima di \xd = 3, in cui avviene la creazione di vortici di grande scala e coincide con la regione di flusso in ombra del cilindro; una seconda regione di shear layer in cui dominano le piccole scale di turbolenza, generata dalla separazione dello strato limite e che si estende tra \yd = 1 ed \yd = -1 per distanze lungo x sicuramente maggiori di quelle misurabili in questa galleria del vento; ed una terza zona in cui il flusso si comporta in maniera simile a quella di un flusso a potenziale che si estende fuori dallo shear layer.\par
+Si è inoltre osservato come l'anemometro a filo caldo sia uno strumento in grado di descrivere in ottima maniera la turbolenza di un campo, mentre presenta limitazioni a basse velocità. Viceversa, l'anemometro ad ultrasuoni è un ottimo strumento per il calcolo del campo medio, riuscendo a fornire informazioni dirette sulla direzione della corrente locale e non essendo affetto da errori per velocità basse, ma ha risoluzioni spaziale e temporale ridotte. Per questo motivo, unito alla notevole invasività della sonda, risulta inadatto all'analisi della turbolenza.\par
+Si è inoltre verificato che i dati raccolti con i due anemometri trovano riscontro nei lavori già 
+pubblicati in letteratura.
+\bibliographystyle{plain}
+\bibliography{sciacilindro}
+\end{document}
