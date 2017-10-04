@@ -1,0 +1,664 @@
+% !TeX spellcheck = it_IT
+\documentclass{article} % A4 paper and 11pt font size
+\usepackage[export]{adjustbox}
+\usepackage{amsmath,amsfonts,amsthm} % Math packages
+\usepackage[italian]{babel}
+\usepackage{booktabs}
+\usepackage{epstopdf}
+\usepackage[cm]{fullpage}
+\usepackage[font={small}, justification=centering]{caption}
+\usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{setspace}
+\usepackage{subcaption}
+\usepackage{subfig}
+\usepackage{units}
+\usepackage{cleveref}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+
+\onehalfspacing
+\newcommand{\xd}{\nicefrac{\textrm{x}}{\textrm{D}}}
+\graphicspath{{./images/}}
+
+
+\begin{document}
+\title{\huge $\mu$PIV}
+\author{Fabio Alfano, Luca Candela,\\Stefano Gambuzza, Matteo Hakimi}
+\date{}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduzione}
+Si vuole misurare il campo di velocità di un flusso in un micro-canale quadrato avente area $S = 1$ mm$^{2}$. I flussi interni sono guidati principalmente dalla differenza di pressione e dalle condizioni al contorno sulla parete.\par
+Si è utilizzata l'analisi $\mu$PIV per risolvere in maniera qualitativa (studio dei profili di velocità) e quantitativa (calcolo degli shear stress) il problema del flusso in un condotto non circolare, caratterizzato da piccole scale particellari e ridotte velocità.\par
+I condotti rettangolari (o, come in questo caso, quadrati) trovano notevole applicazione nell'industria favorendo lo scambio termico con l'esterno data la maggiore superficie a parità di volume (e quindi di portata) rispetto a un condotto cilindrico, ed essendo più semplici ed economici da realizzare; di contro, i condotti cilindrici sono strutturalmente più resistenti per la loro conformazione a guscio.\par
+\section{Cenni teorici}
+L'obiettivo generale della $\mu$PIV è quello di ottenere, in maniera minimamente intrusiva, campi di velocità bidimensionali affidabili in dispositivi di dimensioni ridotte con elevata precisione ed alta risoluzione spaziale. Le misurazioni vengono ottenute confrontando fotogrammi successivi acquisiti ad una stabilita frequenza, e misurando il campo di velocità mediante lo spostamento di particelle traccianti introdotte nel fluido. Le dimensioni del tracciante devono essere tali da non modificare il campo di velocità circostante e la massa delle sue particelle dovrà essere ridotta per evitare discrepanze elevate tra la velocità del fluido e quella del tracciante. Per applicazioni microfluidiche come quella osservata, la dimensione idrodinamica (misura dell'abilità di una particella a seguire il flusso) deve essere tale da non modificare il campo di velocità macroscopico; diventa inoltre importante l'effetto del moto browniano del fluido sulle particelle di tracciante, che dovranno essere abbastanza grandi da non esserne perturbate. In un sistema $\mu$PIV, quindi, agli errori che caratterizzano i sistemi PIV più grandi, si va ad aggiungere l'effetto del moto browniano.\par
+Il principio di funzionamento della PIV prevede l'analisi di due fotogrammi scattati a ridotta distanza temporale, che vengono divisi in finestre di interrogazione di limitata grandezza. Correlando ogni finestra in un fotogramma con tutte le altre nella successiva istantanea, si determina lo spostamento della finestra e quindi la velocità delle particelle di tracciante. Il campo calcolato mediante analisi PIV sarà costante su ogni finestra di interrogazione; se queste saranno troppo grandi, si perderanno tutte le informazioni sull'andamento del campo con dimensione minore di quella della finestra stessa. Tale condizione determina la massima risoluzione spaziale (determinata dal numero di vettori velocità indipendenti del campo acquisito) ottenuta, che risulta indipendente dalla risoluzione spaziale del sensore impiegato per l'acquisizione.\par
+Le immagini sono separate da un ritardo temporale determinato dal frame rate di acquisizione scelto. Anche in tal caso si dovrà raggiungere un equilibrio: valori troppo piccoli di tale intervallo non farebbero rilevare i movimenti delle particelle tra un fotogramma ed il successivo, mentre valori troppo elevati potrebbero far perdere delle particelle che si sono spostate dal piano della messa a fuoco, oltre a restituire un valore di velocità che si discosta da quello istantaneo (la $\mu$PIV calcola la velocità media di una particella tra due fotogrammi, vicina alla velocità istantanea solo per piccoli $\Delta t$).
+\begin{figure}[h!]
+	\centering
+	\includegraphics[scale=0.6]{Immagine1}
+	\caption{Schema dell'illuminazione delle particelle: il piano nero di spessore $\delta$ è a fuoco, il resto del campo non viene rilevato dalla fotocamera.}
+	\label{fig:Geometria}
+\end{figure}
+Si dovrà trovare un valido compromesso anche relativamente alla concentrazione delle particelle traccianti: un numero troppo ridotto delle stesse potrebbe causare problemi di correlazione tra i vari fotogrammi, un numero troppo elevato potrebbe far variare il campo di velocità circostante e causare agglomerati indesiderati.\par
+Dato che, come si vede nello schema di \cref{fig:Geometria}, viene misurata la velocità delle sole particelle nel piano della messa a fuoco dell'obiettivo, risulta più conveniente utilizzare un fascio di luce opportunamente prodotto che illumini principalmente solo tale piano. Qualora non fosse possibile si dovrà ricorrere a metodi più semplici, come l'utilizzo di fari o lampade. Risulta indispensabile mediare nella scelta del numero di lampade da utilizzare durante gli esperimenti,  dato che un'eccessiva illuminazione potrebbe causare delle riflessioni delle particelle di tracciante al momento dell'acquisizione dei fotogrammi con seguenti errori di correlazione, oltre ad un surriscaldamento della base in cui è allocato il microcanale; viceversa, poca illuminazione comporterebbe fotogrammi di scarsa qualità, con un numero minore di particelle disponibili al fine di un'accurata analisi. Il surriscaldamento potrebbe causare la formazione di sacche d'aria che perturbano l'andamento del campo di velocità, invalidando i risultati ottenuti.\par
+\section{Strumentazione}
+La strumentazione utilizzata durante l'esperimento è adeguata alla ripresa in alta definizione delle piccole scale particellari. È stata utilizzata una fotocamera il cui obiettivo presenta cinque stadi in serie che rende possibile un rapporto di ingrandimento molto elevato: si dispone di due stadi con zoom x12 e tre con zoom x36. La camera è collegata all'hardware di acquisizione delle immagini digitali, acquisite con risoluzione 1024x1024.\par
+Un compressore inizializza il flusso di acqua distillata prelevata da un becher, indirizzandolo nel condotto, dopo l'avvenuto miscelamento con particelle vetrose di tracciante rilasciate tramite un'apposita siringa.
+Il fluido attraversa il canale per poi fuoriuscirne, sgorgando in un secondo becher.\par
+La camera è collegata ad un primo hardware di acquisizione delle immagini digitali, mentre un secondo computer svolge operazioni di controllo in termini di portata, tramite un'apposita strumentazione avente tre canali di monitoraggio del seeding (canale II) e del flusso (canali I e III). La presenza di un canale dedicato solamente al seeding ha consentito di regolare la quantità di tracciante immessa, così come di pulire il canale al termine di ogni sessione di acquisizione dei dati.
+Il canale attraversato dal fluido è composto da una serpentina con curve a gomito di 90$^\circ$, della quale sono stati fotografati soltanto tre rami. La fonte di illuminazione utilizzata è data da tre lampade da 500W puntate in direzione della basetta analizzata.\par
+\section{Processazione delle immagini}
+Così come nel caso della PIV, si è ricorso ad una fase di pre-processing per migliorare la qualità delle immagini acquisite, seguita da una fase di post-processing per ricavare dai dati di velocità ottenuti mediante PIVlab i campi delle grandezze derivate.
+\subsection{Pre-processing}
+La fase di pre-processazione è stata effettuata al fine di migliorare la qualità complessiva dell'immagine acquisita. Nelle immagini \textit{raw} provenienti dalla fotocamera può essere presente troppo rumore o un livello di luminosità dei pixel di seeding troppo simile a quello di fondo. Questo  può rendere difficile l'individuazione delle singole particelle e produrre quindi un elevato numero di vettori spuri, invalidando le misurazioni. Attraverso l'uso di opportuni filtri è possibile eliminare e correggere effetti indesiderati quali rumore di fondo e distribuzione non omogenea delle particelle traccianti. I filtri utilizzati sono del tipo high-pass (aumentando il contrasto dell'immagine, ma amplificando eventuale rumore); in alternativa si può operare con una rimozione del minimo come effettuato nel caso della PIV.\par
+Alla fase di preprocessing appartiene la creazione, tramite PIVlab, di una maschera, riportata in \cref{fig:mask}, in modo da ridurre sia l'area dell'immagine effettivamente elaborata dal software (con conseguente riduzione del costo computazionale), sia eventuali disturbi di fondo causa di errori numerici.\par
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.4\linewidth]{example_mask}
+	\caption{}
+	\label{fig:mask}
+\end{figure}
+\subsection{Processing e Post-processing}
+Il sistema PIVlab restituisce un campo di velocità nell'unità di misura pixel per frame, essendo queste le uniche grandezze conosciute dal sistema. Preimpostando all'interno del sistema una lunghezza di riferimento e il $\Delta t$ tra le immagini, è possibile convertire i campi in metri al secondo.\par
+Nella fase successiva di post-processing è stato sviluppato in ambiente MATLAB un programma per ricostruire gli andamenti di campo medio e standard deviation, ottenendo da questi il profilo della velocità in ogni sezione del condotto e nei due rami principali (primo e terzo) che saranno successivamente introdotti.\par
+Mediante confronto con la teoria di Pouseuille per flussi laminari e condotti circolari (trattata con opportune correzioni per condotti quadrati) sono stati confrontati i profili di velocità ed i fattori di attrito al variare del numero di Reynolds.\par
+
+\section{Discussione preliminare}
+Le sessioni si sono svolte studiando i profili di velocità inerenti ai rami 1 e 3, ottenuti sperimentalmente e confrontati con la teoria di Hugen-Poiseuille. Nel primo ramo sono state ignorate le sezioni a distanza ridotta dall'iniettore in quanto in esse non è completamente sviluppato lo strato limite, considerando come valide le misurazioni a distanza superiore a $x_{FD}$ (come riportato nello schema in \cref{fig:regione_ingresso}). Una prima valutazione della distanza $x_{FD}$ si può calcolare come (\cite{kays93}, \cite{shah87}):
+\begin{displaymath}
+	\frac{x_{FD}}{D_{h}} \approx 0.5\ Re
+\end{displaymath} in cui $D_h$ è il diametro idrostatico del condotto (pari alla sua sezione trasversale per condotto quadrato), $Re = \frac{Q D_{h}}{\nu A}$, con $Q$ rappresentante la portata inizializzata ed $A$ area della sezione. Si ha, quindi, una dipendenza di $x_{FD}$ dalla portata e, nel caso preso in esame, variabile tra 1.6 D$_h$ e 5 $D_h$.\par
+Ci si aspetta, nella regione in cui lo strato limite è completamente sviluppato, dei profili di velocià parabolici costanti lungo tutto il condotto.\par
+I profili di velocità sono stati ottenuti partendo da \xd = 4 (immediatamente prima del gomito formato dal condotto), fino ad \xd = 2.5, con passo \xd = 0.5 (\cref{fig:Condotto}). Questo procedimento è stato ripetuto sia per il ramo superiore che per quello inferiore. Tale decisione è stata presa a causa del problema riscontrato nell'intorno della regione di ingresso, dove il campo di velocità risulta notevolmente inferiore per le sezioni di ingresso rispetto a quelle successive nello stesso ramo.\par
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.6\linewidth]{"regione di ingresso"}
+	\caption{Sviluppo del fluido in prossimità della sezione di ingresso}
+	\label{fig:regione_ingresso}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.5\linewidth]{diametri}
+	\caption{Schema del condotto, sono evidenziate le sezioni in cui si è misurato il campo medio di velocità}
+	\label{fig:Condotto}
+\end{figure}
+Le sessioni di lavoro sono state divise in due giornate. Nella prima, quella di calibrazione, si sono acquisite le immagini provando differenti configurazioni dell'apparato di acquisizione, mantenendo costante la portata di flusso entrante pari a $Q = 200$ $\nicefrac{\mu l}{min}$. Sono stati fatti variare il frame rate $fps$, il tempo di esposizione (ovvero lo shutter time $sh$), l'apertura del diaframma della fotocamera $f$, la concentrazione del seeding $C1$ e $C2$ ed infine l'intensità luminosa (accensione di 2 o 3 lampade). Le variazioni di tali parametri sono riassunte in tabella \ref{tab:parametri}.
+\clearpage
+\begin{longtable}{|c|c|c|c|c|}
+	\hline
+	\multicolumn{1}{|c|}{$C$}  & \multicolumn{1}{|c|}{Concentrazione} & \multicolumn{3}{|l|}{$C1$ - 5/6 particelle ogni 32x32 $pixels$} \\
+	\multicolumn{1}{|c|}{}  & \multicolumn{1}{|c|}{} & \multicolumn{3}{|l|}{$C2$ - 9 particelle ogni 32x32 $pixels$} \\
+	\hline
+	\multicolumn{1}{|c|}{$fps$}  & \multicolumn{1}{|c|}{Frame Rate} & \multicolumn{3}{|l|}{da $250fps$ a $1000fps$, limite massimo imposto} \\
+	\multicolumn{1}{|c|}{}  & \multicolumn{1}{|c|}{} & \multicolumn{3}{|l|}{per una soddisfacente risoluzione
+		spaziale} \\
+	\hline
+	\multicolumn{1}{|c|}{$sh$}  & \multicolumn{1}{|c|}{Shutter Time} & \multicolumn{3}{|l|}{da $1/500sec$ a $1/2000sec$, tempo intercorso } \\
+	\multicolumn{1}{|c|}{}  & \multicolumn{1}{|c|}{} & \multicolumn{3}{|l|}{tra apertura e chiusura otturatore} \\
+	\hline
+	\multicolumn{1}{|c|}{$f$}  & \multicolumn{1}{|c|}{Apertura} & \multicolumn{1}{|c|}{$f/1.4$} & \multicolumn{1}{|c|}{$f/2$} & \multicolumn{1}{|c|}{$f/2.8$} \\
+	\multicolumn{1}{|c|}{}  & \multicolumn{1}{|c|}{Diaframma} & \multicolumn{1}{|c|}{}& \multicolumn{1}{|c|}{}& \multicolumn{1}{|c|}{}\\
+	\hline
+	\caption{Parametri di calibrazione}
+	\label{tab:parametri}
+\end{longtable}
+Si sono variati tali parametri al fine di trovare il setting ottimale dell'apparato di acquisizione. Si riportano in tabella \ref{tab:calibrazione} i dati delle prime prove acquisite atte alla calibrazione della strumentazione.
+\begin{longtable}{|l|c|c|c|c|c|}
+	\hline
+	\multicolumn{1}{|c|}{}
+	& \multicolumn{1}{|c|}{Concentrazione}
+	& \multicolumn{1}{|c|}{Frame Rate}
+	& \multicolumn{1}{|c|}{Shutter time}
+	& \multicolumn{1}{|c|}{Apertura Diaframma}
+	& \multicolumn{1}{|c|}{Illuminazione}
+	\\
+	\hline
+	Prova 1      &  C1  & 250 & 1/500 & $f$/2 & 2 lampade\\
+	\hline
+	Prova 2      &  C1 & 250 & 1/500 & $f$/2 & 3 lampade\\
+	\hline
+	Prova 3      &  C1 & 250 & 1/500 & $f$/4 & 3 lampade\\
+	\hline
+	Prova 4      &  C1 & 500 & 1/500&$f$/4 & 3 lampade\\
+	\hline
+	Prova 5      &   C1 & 500 & 1/1000&$f$/2.8 & 3 lampade\\
+	\hline
+	Prova 6      & C1   & 1000 &1/1000 &$f$/2.8 & 3 lampade\\
+	\hline
+	Prova 7      & C2  & 500 &1/1000 &$f$/2 & 3 lampade\\
+	\hline
+	\caption{Prove di Calibrazione}
+	\label{tab:calibrazione}
+\end{longtable}
+Nella seconda giornata è stata modificata la velocità del flusso all'interno del condotto tramite la variazione della portata in un range compreso tra 200 $\nicefrac{\mu l}{min}$ e 600 $\nicefrac{\mu l}{min}$, campionate con passo 100 come indicato in tabella \ref{tab:prove}.
+\begin{longtable}{|l|c|c|c|c|c|c|}
+	\hline
+	\multicolumn{1}{|c|}{}
+    & \multicolumn{1}{|c|}{Portata [$\nicefrac{\mu l}{min}$]}
+	& \multicolumn{1}{|c|}{Concentrazione}
+	& \multicolumn{1}{|c|}{Frame Rate [Hz]}
+	& \multicolumn{1}{|c|}{Shutter time [s]}
+	& \multicolumn{1}{|c|}{Apertura Diaframma}
+	& \multicolumn{1}{|c|}{Illuminazione}
+	\\
+	\hline
+	Prova 7      & 200 & C2 & 500  & 1/1000 & $f$/2   & 3 lampade \\
+	\hline
+	Prova 8      & 300 & C2 & 1000 & 1/2000 & $f$/2   & 3 lampade \\
+	\hline
+	Prova 9      & 400 & C2 & 1000 & 1/2000 & $f$/1.4 & 3 lampade \\
+	\hline
+	Prova 10     & 500 & C2 & 1000 & 1/2000 & $f$/1.4 & 3 lampade \\
+	\hline
+	Prova 11     & 600 & C2 & 1000 & 1/2000 & $f$/1.4 & 3 lampade \\
+	\hline
+	\caption{Prove con variazione di portata}
+	\label{tab:prove}
+\end{longtable}
+\clearpage
+\section{Sessione di calibrazione}
+\subsection{Illuminazione}
+Le prime due prove di calibrazione, come riportato in tabella \ref{tab:calibrazione}, sono state acquisite a parità di condizioni per quanto riguarda concentrazione (pari a $C1$), $fps$, $sh$ ed $f$, per valutare quanto il sistema di illuminazione esterno incida sulle acquisizioni. Si può affermare che una eccessiva illuminazione, un diaframma molto aperto e uno shutter time relativamente basso (come utilizzati in prova 2) possano portare a condizioni di eccessiva riflessione della luce da parte del seeding, quindi ad immagini troppo luminose come è possibile verificare in \cref{fig:imm_p2}.\par
+Dalla prova 2 in avanti le immagini verranno rilevate mediante l'utilizzo di 3 lampade, consentendo una maggiore e più omogenea illuminazione del sistema. Dal confronto della prova 3 (\cref{fig:cm_p3}) con le prime due si osserva immediatamente come una non corretta configurazione di $sh$ ed $f$ possa portare ad una inattendibilità del risultato ottenuto. In questo caso uno shutter time molto basso unito ad un diaframma molto chiuso porta ad una non ottimale messa a fuoco e luminosità del campione analizzato.\par
+\begin{figure}[!ht]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P1_2lamp}
+		\caption{Prova 1}
+		\label{fig:imm_p1}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P2_3lamp}
+		\caption{Prova 2}
+		\label{fig:imm_p2}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P3_3lamp}
+		\caption{Prova 3}
+		\label{fig:imm_p3}	
+	\end{subfigure} 	
+	\caption{Immagini non elaborate acquisite}
+	\label{fig:imm_P123}
+\end{figure}
+\begin{figure}[!ht]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P1/Contour_umean_1_1}
+		\caption{Campo medio Prova 1}
+		\label{fig:cm_p1}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P2/Contour_Umean_2_1}
+		\caption{Campo medio Prova 2}
+		\label{fig:cm_p2}
+	\end{subfigure} \quad  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P3/Contour_Umean_3}
+		\caption{Campo medio Prova 3}
+		\label{fig:cm_p3}	
+	\end{subfigure} 	
+	\caption{Campo medio componente \textit{u}}
+	\label{fig:icm_P123}
+\end{figure}
+\clearpage
+\subsection{Frame rate}
+Nelle prove 3 e 4 vengono lasciati invariati $sh$ ed $f$, variando il frame rate di acquisizione. Dalle figure \ref{fig:cm_p3-1} e \ref{fig:cm_p4} si osserva come un frame rate maggiore (quindi un $\Delta t$ minore) causi una più alta deviazione standard, in particolar modo nelle regioni centrali del primo ramo, causata da un errore maggiore nelle misure e conseguente perdita di attendibilità.\par
+\begin{figure}[ht!]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P3/Contour_umean_3}
+		\caption{Prova 3}
+		\label{fig:cm_p3-1}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P4/Contour_Umean_4}
+		\caption{Prova 4}
+		\label{fig:cm_p4}
+	\end{subfigure}
+	\caption{Campo medio, componente \textit{u}}
+	\label{fig:cm_p34}
+\end{figure}
+\begin{figure}[!ht]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P3/STD_u_3}
+		\caption{Prova 3}
+		\label{fig:std_p3}	
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P4/STD_u_4}
+		\caption{Prova 4}
+		\label{fig:std_p4}	
+	\end{subfigure}	
+	\caption{Deviazione standard, componente \textit{u}}
+	\label{fig:std_p34}
+\end{figure}
+\subsection{Shutter time e diaframma}
+\begin{figure}[ht!] 
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P4/U_y_terzo_4}
+		\caption{Prova 4}
+		\label{fig:terzo_p4}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P5/U_y_terzo_5}
+		\caption{Prova 5}
+		\label{fig:terzo_p5}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P6/U_y_terzo_6}
+		\caption{Prova 6}
+		\label{fig:terzo_p6}
+	\end{subfigure}
+	\caption{Profili di velocità nel terzo ramo}
+	\label{fig:profili_terzoramo_p45}
+\end{figure}
+La prova 5 è stata acquisita aumentando l'apertura del diaframma rispetto alla precedente, ed allo stesso tempo dimezzando $sh$. La prova 6, invece, è stata ottenuta mantenendo le stesse impostazioni della prova 5 ma aumentando il frame rate a 1000 fps. Si osservano in \cref{fig:profili_terzoramo_p45} gli andamenti dei profili di velocità lungo l'asse verticale calcolati per $\xd$ tra 1 e 4. Si nota una rappresentazione leggermente migliore nella prova 5 (\cref{fig:terzo_p5}), dove uno shutter time inferiore porta ad una risoluzione temporale maggiore ma al contempo una minore esposizione.Questa perdita di esposizione è stata controbilanciata dall'incremento di $f$.\par
+Dal campo medio in \cref{fig:cm_45} e dai profili di velocità si osserva una asimmetria del flusso. Le cause possono risiedere nella ridotta concentrazione di tracciante immesso. Inoltre è ancora presente il problema della correlazione nel primo tratto di condotto.\par
+\begin{figure}[h!] 
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P4/Contour_Umean_4}
+		\caption{Prova 4}
+		\label{fig:cm_p4-1}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P5/Contour_Umean_5}
+		\caption{Prova 5}
+		\label{fig:cm_p5}
+	\end{subfigure}\quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P6/Contour_Umean_6}
+		\caption{Prova 6}
+		\label{fig:cm_p6}
+	\end{subfigure}
+	\caption{Campo medio, componente \textit{u}}
+	\label{fig:cm_45}
+\end{figure}
+\clearpage
+\subsection{Prova conclusiva}
+Nella settima prova è stata aumentata la concentrazione del seeding portandola a $C2$, si è dimezzato il tempo di esposizione, ed infine si è aumentata l'apertura del diaframma ad $f$/2. In \cref{fig:cmstd_P7} si osserva il netto miglioramento dei profili di velocità, il cui andamento parabolico trova riscontro nella teoria di Hugen-Poiseuille, come visualizzato in figg.~\ref{fig:pvr1_p7} e \ref{fig:pvr3_p7}. Inoltre si osserva la perdita di carico causata dai gomiti, che comporta una velocità massima minore nel terzo ramo.\par
+\begin{figure}[h!] % 
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/Contour_umean_7}
+		\caption{Campo medio}
+		\label{fig:cm_p7}
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/STD_u_7}
+		\caption{STD}
+		\label{fig:std_p7}
+	\end{subfigure} \\
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/U_y_primo_7}
+		\caption{Profilo velocità primo ramo}
+		\label{fig:pvr1_p7}	
+	\end{subfigure} \quad
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/U_y_terzo_7}
+		\caption{Profilo velocità terzo ramo}
+		\label{fig:pvr3_p7}	
+	\end{subfigure}	
+	\caption{Prova 7}
+	\label{fig:cmstd_P7}
+\end{figure}
+\subsection{Conclusioni Calibrazione}
+Dalle prove di calibrazione si è potuto notare come una eccessiva apertura del diaframma e bassi tempi di esposizione portano a prove completamente scorrelate e prive di significato. Nella prova 7 la riduzione di $sh$ è stata compensata con una maggiore apertura del diaframma, consentendo di ottenere una corretta esposizione e messa a fuoco del piano di interesse. Le prove successive verranno eseguite con concentrazioni di particelle pari a $C2$ e frame rate tra 500 $fps$ e 1000 $fps$ (massima risoluzione temporale ottenibile per una risoluzione spaziale accettabile).
+\clearpage
+\section{Risultati analitici e sperimentali}
+La seconda sessione è stata svolta variando la portata in ingresso valutandone, al variare del numero di Reynolds, gli effetti sullo sviluppo del flusso interno. Si sono calcolati gli shear stress $\tau_w$, sia mediante teoria di Hagen-Poiseuille che con l'approssimazione della derivata prima (formula a 3 punti in avanti) su profilo sperimentale, di cui ci si attende un andamento costante. Si calcola poi il fattore di attrito di Darcy-Weisbach $f$, per il quale i risultati empirici forniscono un andamento $f = \nicefrac{56.92}{Re}$, come riportato in \cite{lindeburg13}. Questo andamento si riferisce al caso particolare di condotto a sezione quadrata, ma nel caso più generale si ha sempre una legge del tipo $f = \nicefrac{\textrm{const}}{Re}$ nel range di Reynolds studiato, come riportato in \cite[eq.~2]{hetsroni05}. Si sono confrontati i valori teorici con quelli ottenuti mediante sperimentazione, ed utilizzando la $\tau_w$ è stato possibile stimare il fattore di attrito $f_{sp}$ mediante la \cref{eq:f_sp}.\par
+Si sono successivamente calcolate le perdite di pressione e le rispettive perdite di potenza per unità di lunghezza, definite rispettivamente in \cref{eq:pres} ed \cref{eq:powr}.
+\begin{equation}
+	f_{sp} = 8\frac{\tau_w}{\rho\ u_{m}^2}
+	\label{eq:f_sp}
+\end{equation}
+\begin{equation}
+	\frac{\Delta P_L}{L} = \frac{4\tau_w}{D_h}
+	\label{eq:pres}
+\end{equation}
+\begin{equation}
+	\frac{\dot{W}}{L} = \frac{\Delta P_L\ Q}{L}
+	\label{eq:powr}
+\end{equation}
+
+Si riportano di seguito i risultati delle prove sperimentali, descritti dall'analisi del campo medio e dei profili di velocità orizzontale nel primo e terzo ramo, normalizzati in entrambi i casi con il valore massimo ottenuto nel primo ramo. Vengono inoltre riportati, per ogni prova, i risultati ottenuti analizzando il profilo di velocità ad \xd = 4.5 per entrambi i rami.
+\subsection{Prova 7}
+Dalla figura \ref{fig:MEAN_U7}, nel primo ramo si osserva un'intensità del campo medio crescente dalla regione di ingresso fino all'inizio del gomito. Questo effetto non desiderato è causato dalla presenza di sacche d'aria lungo il condotto e dalla distribuzione non ottimale del seeding nella sezione d'ingresso.\par
+Il profilo di velocità, come atteso, presenta un andamento parabolico, con il massimo in prossimità della mezzeria del condotto, e velocità nulla a parete.\par
+È possibile osservare, in figura \ref{fig:U1_y7}, il confronto tra gli andamenti dei profili di velocità sperimentali e quelli teorici (riportato nella curva in rosso asteriscata). Si nota come, per \xd piccoli, le curve tendano a sovrapporsi mentre, avvicinandosi al secondo ramo, le velocità tendono a diminuire. Nel confronto con l'andamento teorico si nota una non perfetta simmetria del flusso, probabilmente causata dalla presenza di sacche d'aria che rendono asimmetrico il campo di velocità.\par
+A ridosso della parete si osservano tangenti differenti tra il profilo ideale e quelli misurati. La causa si può ricercare, oltre che nelle sacche d'aria già citate, ad una distribuzione di seeding non ottimale nella regione più vicina alla parete. Per questo motivo si è approssimata la tangente con un metodo numerico a tre punti in avanti.\par
+Superato il ramo 2, si osserva in figura \ref{fig:U3_y7}, l'andamento dei profili di velocità relativi al ramo 3. In questo caso, la mancanza di simmetria si riduce ed il picco delle parabole tende ad allinearsi con l'asse di simmetria del condotto per ascisse \xd $\ < 3$ mentre, per \xd $\ > 3$ (che, per come è stato definito il sistema di coordinate in \cref{fig:condotto}, corrisponde alle sezioni di ramo più vicine al gomito), in prossimità della parete si osserva l'effetto della separazione dello strato limite in corrispondenza del gomito che porta alla presenza di un flesso nel profilo di velocità. Questo flesso si riduce fino a scomparire procedendo lungo \textit{x} per la scomparsa della bolla di ricircolo. È facilmente osservabile, in tale regione, un aumento del picco di velocità, imputabile alla restrizione del condotto dovuto, anche in tal caso, alla bolla di ricircolo, il quale influenza la soluzione esterna.\par
+In tabella \ref{tab:A7} sono riportati i confronti tra i risultati sperimentali e quelli  analitici. Si nota come lo shear stress, ottenuto numericamente dal profilo sperimentale, risulti molto prossimo a quello determinato dalla teoria di Pouseille. Analizzando il fattore di attrito, è invece constatabile uno scostamento del valore sperimentale da quello teorico di $\approx 42\%$. A completamento dello studio del comportamento del flusso, si sono calcolate le perdite di pressione e le perdite di potenza per unità di lunghezza.\par
+
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/Contour_Umean_7}
+		\caption{Campo medio}
+		\label{fig:MEAN_U7}
+	\end{subfigure} ~ 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/U_y_Primo_7}
+		\caption{Profili velocità ramo 1}
+		\label{fig:U1_y7}
+	\end{subfigure} ~  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P7/U_y_terzo_7}
+		\caption{Profili velocità ramo 3}
+		\label{fig:U3_y7}	
+	\end{subfigure}  
+	\caption{Prova 7}
+	\label{fig:7}
+\end{figure}
+
+\begin{table}[ht!]
+	\centering
+	\setlength \extrarowheight{3pt}
+	\begin{tabular}{|c|c|}
+		\hline
+		Shear stress a parete (teorico) & $1.52 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Shear stress a parete (sperimentale) & $1.84 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Perdite di pressione per unità di lunghezza & $7.35 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm^2\ s^2}$ \\ % era $2.16 \cdot 10^{-4}\ \nicefrac{\rm Kg\ mm}{\rm s^3}$ \\ 
+		\hline 
+		Perdite di potenza per unità di lunghezza & $1.47 \cdot 10^{-5}\ \nicefrac{\rm W}{\rm mm}$ \\ 
+		\hline 
+		$f_{th}$ & 19.47 \\ 
+		\hline 
+		$f_{sp}$ & 13.22 \\ 
+		\hline 
+	\end{tabular}
+	\caption{Risultati, prova 7}
+	\label{tab:A7}
+\end{table}
+
+%\begin{longtable}{|c|c|c|c|c|c|}
+%	\hline
+%	\multicolumn{1}{|c|}{Shear Stress Parete}
+%	& \multicolumn{1}{|c|}{Shear Stress Parete}
+%	& \multicolumn{1}{|c|}{Perdite di Pressione}
+%	& \multicolumn{1}{|c|}{Perdite }	
+%	& \multicolumn{1}{|c|}{$f_{teorico}=56.92/Re$}
+%	& \multicolumn{1}{|c|}{$f_{sperimentale}$}	\\
+%	\multicolumn{1}{|c|}{- Teorico -}
+%	& \multicolumn{1}{|c|}{- Sperimentale -}
+%	& \multicolumn{1}{|c|}{per unità di lunghezza}
+%	& \multicolumn{1}{|c|}{di Potenza}
+%	& \multicolumn{1}{|c|}{}	
+%	& \multicolumn{1}{|c|}{}	\\
+%	\hline
+%	$ Kg/mm^3\hspace{1mm}s^2 $  &  $  Kg/mm^3\hspace{1mm}s^2 $  & $ Kg\hspace{1mm}mm^4/s^2 $ & $ W/mm $ &\textit{adim.} &\textit{adim.}\\
+%	\hline
+%	$1.52e-5$  & $1.84e-5$  &$7.34e-5$   &$1.47e-5$   &  $19.47$ &$13.22$  \\
+%	\hline
+%	\caption{\it Analisi numerica prova 7}
+%	\label{tab:A7}
+%\end{longtable}
+
+
+\subsection{Prova 8}
+Le problematiche precedentemente esposte riguardante il campo medio presso la sezione d'ingresso sussistono anche per questa prova, come si vede da figura \ref{fig:MEAN_U_8}, per i medesimi motivi elencati durante l'analisi della precedente acquisizione.\par
+Le simmetrie delle curve dei profili di velocità del primo ramo, come raffigurato in figura \ref{fig:U1_y8}, risultano essere molto più regolari rispetto alla prova precedente. Stesse considerazioni riguardanti la prova 7 evitano di essere esposte riguardo alla figura \ref{fig:U3_y8}, limitandoci a riportare, di seguito, la tabella \ref{tab:A8} con i confronti tra i valori sperimentali ed analitici di shear stress, fattore di attrito ed i valori legati alle perdite di pressione e di potenza.
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P10/Contour_Umean_12_1}
+		\caption{Campo medio}
+		\label{fig:MEAN_U_8}
+	\end{subfigure} ~ 
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P10/U_y_Primo_12_1}
+		\caption{Profili velocità ramo 1}
+		\label{fig:U1_y8}
+	\end{subfigure} ~  
+	\begin{subfigure}{0.3\textwidth}
+		\includegraphics[width=\textwidth]{P10/U_y_terzo_12_1}
+		\caption{Profili velocità ramo 3}
+		\label{fig:U3_y8}	
+	\end{subfigure}  
+	\caption{Analisi prova 8}
+	\label{fig:8}
+\end{figure}
+
+\begin{table}[ht!]
+	\centering
+	\setlength \extrarowheight{3pt}
+	\begin{tabular}{|c|c|}
+		\hline
+		Shear stress a parete (teorico) & $2.28 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Shear stress a parete (sperimentale) & $2.58 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Perdite di pressione per unità di lunghezza & $1.03 \cdot 10^{-4}\ \nicefrac{\rm Kg}{\rm mm^2\ s^2}$ \\ % era $2.16 \cdot 10^{-4}\ \nicefrac{\rm Kg\ mm}{\rm s^3}$ \\ 
+		\hline 
+		Perdite di potenza per unità di lunghezza & $3.10 \cdot 10^{-5}\ \nicefrac{\rm W}{\rm mm}$ \\ 
+		\hline 
+		$f_{th}$ & 12.98 \\ 
+		\hline 
+		$f_{sp}$ & 8.27 \\ 
+		\hline 
+	\end{tabular}
+	\caption{Risultati, prova 8}
+	\label{tab:A8}
+\end{table}
+
+\subsection{Prova 9}
+In questa prova più che nelle altre risulta interessante osservare come nel terzo ramo di figura \ref{fig:U3_y9} i primi profili tendano ad assumere una configurazione asimmetrica rispetto la linea media, raggiungendo oltretutto velocità massime più alte. Tale fenomeno risulta ancora più marcato in questa prova che nelle precedenti.
+\begin{figure}[h]
+	\centering
+	\begin{subfigure}{0.29\textwidth}
+		\includegraphics[width=\textwidth]{P11/Contour_Umean_11_1}
+		\caption{Campo medio}
+		\label{fig:MEAN_U9}
+	\end{subfigure} ~ 
+	\begin{subfigure}{0.29\textwidth}
+		\includegraphics[width=\textwidth]{P11/U_y_Primo_11_1}
+		\caption{Profili velocità ramo 1}
+		\label{fig:U1_y9}
+	\end{subfigure} ~  
+	\begin{subfigure}{0.29\textwidth}
+		\includegraphics[width=\textwidth]{P11/U_y_terzo_11_1}
+		\caption{Profili velocità ramo 3}
+		\label{fig:U3_y9}	
+	\end{subfigure}  
+	\caption{Analisi prova 9}
+	\label{fig:9}
+\end{figure}
+
+\begin{table}[ht!]
+	\centering
+	\setlength \extrarowheight{3pt}
+	\begin{tabular}{|c|c|}
+		\hline
+		Shear stress a parete (teorico) & $3.04 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Shear stress a parete (sperimentale) & $3.22 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Perdite di pressione per unità di lunghezza & $1.29 \cdot 10^{-4}\ \nicefrac{\rm Kg}{\rm mm^2\ s^2}$ \\ % era $2.16 \cdot 10^{-4}\ \nicefrac{\rm Kg\ mm}{\rm s^3}$ \\ 
+		\hline 
+		Perdite di potenza per unità di lunghezza & $5.15 \cdot 10^{-5}\ \nicefrac{\rm W}{\rm mm}$ \\ 
+		\hline 
+		$f_{th}$ & 9.73 \\ 
+		\hline 
+		$f_{sp}$ & 5.79 \\ 
+		\hline 
+	\end{tabular}
+	\caption{Risultati, prova 9}
+	\label{tab:A9}
+\end{table}
+
+%\begin{longtable}{|c|c|c|c|c|c|}
+%	\hline
+%	\multicolumn{1}{|c|}{Shear Stress Parete}
+%	& \multicolumn{1}{|c|}{Shear Stress Parete}
+%	& \multicolumn{1}{|c|}{Perdite di Pressione}
+%	& \multicolumn{1}{|c|}{Perdite }	
+%	& \multicolumn{1}{|c|}{$f_{teorico}=56.92/Re$}
+%	& \multicolumn{1}{|c|}{$f_{sperimentale}$}	\\
+%	\multicolumn{1}{|c|}{- Teorico -}
+%	& \multicolumn{1}{|c|}{- Sperimentale -}
+%	& \multicolumn{1}{|c|}{per unità di lunghezza}
+%	& \multicolumn{1}{|c|}{di Potenza}
+%	& \multicolumn{1}{|c|}{}	
+%	& \multicolumn{1}{|c|}{}	\\
+%	\hline
+%	$ Kg/mm\hspace{1mm}s^2 $  &  $  Kg/mm\hspace{1mm}s^2 $  & $ Kg\hspace{1mm}mm^2/s^2 $ & $ W/mm $ &\textit{adim.} &\textit{adim.}\\
+%	\hline
+%	$3.04e-5$  & $3.22e-5$  &$1.29e-4$   &$5.15e-5$   &  $9.73$ &$5.79$  \\
+%	\hline
+%	\caption{\it Analisi numerica prova 9}
+%\end{longtable}
+
+\subsection{Prova 10 e Prova 11}
+Le ultime due prove risultano poco affidabili in quanto le velocità del primo ramo risultano essere inferiori a quelle del terzo. Questo comportamento è attribuibile a qualche sacca d'aria di grandi dimensioni e/o un accumulo delle stesse che potrebbe ostacolare il corretto andamento del flusso, anche a monte delle sezioni fotografate. Di conseguenza, in fig. \ref{fig:U1_y10}, si osservano andamenti poco probabili, soprattutto nella zona centrale, mentre le tangenti a parete sembrano mantenere un andamento simile a quello teorico. In fig.~\ref{fig:U3_y10}, invece, si osserva un andamento della velocità più regolare, che indica un aumento della velocità del flusso presso il terzo ramo. Questo comportamento si ripete anche nella prova 11 di figure \ref{fig:MEAN_U11}, \ref{fig:U1_y11} e \ref{fig:U3_y11}; tale comportamento può essere causato da una non più esatta correlazione tra i frame in successione, caratteristico delle limitazioni inerenti ai parametri di acquisizione.
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.22\textwidth}
+		\includegraphics[width=\textwidth]{P12/Contour_Umean_14_1}
+		\caption{Campo medio}
+		\label{fig:MEAN_U10}
+	\end{subfigure} ~ \hspace{1cm}
+	\begin{subfigure}{0.22\textwidth}
+		\includegraphics[width=\textwidth]{P12/U_y_Primo_14_1}
+		\caption{Profili velocità ramo 1}
+		\label{fig:U1_y10}
+	\end{subfigure} ~  \hspace{1cm}
+	\begin{subfigure}{0.22\textwidth}
+		\includegraphics[width=\textwidth]{P12/U_y_terzo_14_1}
+		\caption{Profili velocità ramo 3}
+		\label{fig:U3_y10}	
+	\end{subfigure} \\
+	\begin{subfigure}{0.22\textwidth}
+		\includegraphics[width=\textwidth]{P13/Contour_Umean_16_1}
+		\caption{Campo medio}
+		\label{fig:MEAN_U11}
+	\end{subfigure} ~ \hspace{1cm}
+	\begin{subfigure}{0.22\textwidth}
+		\includegraphics[width=\textwidth]{P13/U_y_Primo_16_1}
+		\caption{Profili velocità ramo 1}
+		\label{fig:U1_y11}
+	\end{subfigure} ~  \hspace{1cm}
+	\begin{subfigure}{0.22\textwidth}
+		\includegraphics[width=\textwidth]{P13/U_y_terzo_16_1}
+		\caption{Profili velocità ramo 3}
+		\label{fig:U3_y11}	
+	\end{subfigure}  
+	\caption{Analisi prove 10 ed 11}
+	\label{fig:10}
+\end{figure}
+\begin{table}[ht!]
+	\centering
+	\setlength \extrarowheight{3pt}
+	\begin{tabular}{|c|c|}
+		\hline
+		Shear stress a parete (teorico) & $3.80 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Shear stress a parete (sperimentale) & $3.93 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+		\hline 
+		Perdite di pressione per unità di lunghezza & $1.57 \cdot 10^{-4}\ \nicefrac{\rm Kg}{\rm mm^2\ s^2}$ \\ % era $2.16 \cdot 10^{-4}\ \nicefrac{\rm Kg\ mm}{\rm s^3}$ \\ 
+		\hline 
+		Perdite di potenza per unità di lunghezza & $7.86 \cdot 10^{-5}\ \nicefrac{\rm W}{\rm mm}$ \\ 
+		\hline 
+		$f_{th}$ & 7.78 \\ 
+		\hline 
+		$f_{sp}$ & 4.52 \\ 
+		\hline 
+	\end{tabular}
+	\caption{Risultati, prova 10}
+	\label{tab:A10}
+\end{table}
+\begin{table}[ht!]
+\centering
+\setlength \extrarowheight{3pt}
+\begin{tabular}{|c|c|}
+	\hline
+	Shear stress a parete (teorico) & $4.56 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+	\hline 
+	Shear stress a parete (sperimentale) & $5.30 \cdot 10^{-5}\ \nicefrac{\rm Kg}{\rm mm\ s^2}$ \\ 
+	\hline 
+	Perdite di pressione per unità di lunghezza & $2.12 \cdot 10^{-4}\ \nicefrac{\rm Kg}{\rm mm^2\ s^2}$ \\ % era $2.16 \cdot 10^{-4}\ \nicefrac{\rm Kg\ mm}{\rm s^3}$ \\ 
+	\hline 
+	Perdite di potenza per unità di lunghezza & $1.27 \cdot 10^{-5}\ \nicefrac{\rm W}{\rm mm}$ \\ 
+	\hline 
+	$f_{th}$ & 6.49 \\ 
+	\hline 
+	$f_{sp}$ & 4.24 \\ 
+	\hline 
+\end{tabular}
+\caption{Risultati, prova 11}
+\label{tab:A11}
+\end{table}
+
+\section{Conclusioni ed Osservazioni}
+Il moto del liquido studiato risponde alla legge di Hagen-Poiseuille per un fluido newtoniano in regime laminare, essendo viscoso e scorrendo in modo stazionario in un condotto a sezione costante, presentando un andamento del tutto analogo a quello teorico. L'analisi si è concentrata sull'andamento a parete e sui valori massimi registrati nella mezzeria del condotto.\par
+Si osserva in figura \ref{fig:Re_f} l'andamento della componente dello stress di taglio alla parete del profilo sperimentale, confrontato con l'andamento teorico. I singoli valori di $\tau_w$ registrati sono sempre di poco superiori a quelli teorici, ma l'andamento crescente della teoria risulta verificato. Una possibile causa di questa differenza si può ipotizzare essere l'elevata temperatura raggiunta dal fluido, a causa dell'impianto di illuminazione.\par
+In figura \ref{fig:Re_tau} si osserva l'andamento del fattore di attrito di Darcy–Weisbach in funzione del numero di Reynolds in un grafico logaritmico. In questo caso i valori sperimentali sottostimano il fattore teorico costantemente, ma anche per questo grafico si registra un andamento pressoché identico, al netto dell'errore costante. Si ottiene, perciò, un andamento ancora inversamente proporzionale al numero di Reynolds, ma con una costante moltiplicativa diversa da quella riportata in teoria.\par
+Si può osservare come, per i problemi già menzionati nell'ultima prova, sia l'andamento di $\tau_w(Re)$ che di $f(Re)$ presentino un errore maggiore rispetto a quello della teoria.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{Re_tau}
+		\caption{Andamento Stress di taglio sulla parete calcolato alla sezione di massima velocità del primo ramo, \xd= 4.5}
+		\label{fig:Re_f}
+	\end{subfigure} ~ 
+	\begin{subfigure}{0.4\textwidth}
+		\includegraphics[width=\textwidth]{Re_f}
+		\caption{Andamento del fattore di attrito di Darcy–Weisbach in funzione del numero di Reynolds}
+		\label{fig:Re_tau}
+	\end{subfigure}
+	\caption{Andamenti prove sperimentali}
+\end{figure}
+Ad alte portate si osservano i primi limiti dell'apparato sperimentale, causati da una non più efficace correlazione tra i fotogrammi, che comporta velocità registrate più basse e conseguenti errori nelle misure. Inoltre, ad alte portate, l'elevato seeding si va a depositare particolarmente sulle pareti del condotto e soprattutto nella regione di ricircolazione a valle del secondo gomito, causando zone ad alta luminosità che, in fase di preprocessing delle immagini, causano problemi su tutto il fotogramma.
+
+\section{Confronto con references}
+Si è scelto per il confronto dei vari profili di velocità il lavoro riportato in \cite{xu08}, nel quale si ha un condotto rettangolare (rinunciando quindi al confronto diretto dell'andamento di $f$), caratterizzato da una parte superiore in materiale idrofobo e da una inferiore in materiale idrofilo. Questa differenza permette il confronto solo tra la parte inferiore del profilo di velocità, mentre si osserva un \textit{overshoot} dei dati nella parte superiore.\par
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}{0.35\textwidth}
+		\includegraphics[width=\linewidth]{Confronti/xu_vel_z}
+		\caption{Da \cite[fig.~8b]{xu08}, Re = 1.8}
+		\label{fig:xu_mean}
+	\end{subfigure}\qquad
+	\begin{subfigure}{0.35\textwidth}
+		\includegraphics[width=\linewidth]{P7/U_y_Primo_7}
+		\caption{Profili di velocità, primo ramo, prova 7}
+	\end{subfigure}
+	\caption{Confronto tra i profili di velocità media}
+\end{figure}
+Al netto degli errori nei profili presentati, causati dalla presenza delle già menzionate sacche d'aria, si nota come anche in altri lavori la velocità misurata sia minore di quella determinata mediante soluzione di Pouseille (rappresentata in \cref{fig:xu_mean} dalla linea tratteggiata). La differenza tra l'andamento di Pouseille e quello registrato è maggiore nei dati presentati di quella riportata in \cite{xu08}.\par
+Si è inoltre utilizzato il lavoro \cite{li05} per valutare come i profili di velocità siano affetti dal numero di Reynolds. Si osserva che, fino a Re $\approx 250$, il comportamento dei profili di velocità si mantiene sufficientemente vicino a quello teorico, con un piccolo overshoot in prossimità della parete. Questo giustifica i vari confronti fatti in ogni prova con il profilo teorico di Pouseille.
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.6\textwidth]{Confronti/li05_vel_reynolds}
+	\caption{Da \cite[fig.~5]{li05}}
+\end{figure}
+\begin{thebibliography}{9}
+	\bibitem{kays93}
+		Kays, W., and M. Crawford "Convection heat transfer." \textit{NY: McGraw–Hill} (1993).
+	\bibitem{shah87}
+		Shah, R. K., and Bhatti, M. S. "Laminar convective heat transfer in ducts." \textit{Handbook of single-phase convective heat transfer} v.~3 (1987).
+	\bibitem{brown02}
+		Brown, Glenn O. "The history of the Darcy-Weisbach equation for pipe flow resistance." \textit{Environmental and Water Resources History} 38.7 (2002): pp.~34-43.
+	\bibitem{lindeburg13}
+		Lindeburg, Michael R. "Mechanical engineering reference manual for the PE exam". \textit{www.ppi2pass.com} (2013).
+	\bibitem{xu08}
+		Zheng, Xu, and Zhan-hua Silber-Li. "Measurement of velocity profiles in a rectangular microchannel with aspect ratio AR= 0.35." \textit{Experiments in Fluids} 44.6 (2008): 951-959.
+	\bibitem{hetsroni05}
+		Hetsroni, G., et al. "Fluid flow in micro-channels." \textit{International Journal of Heat and Mass Transfer} 48.10 (2005): 1982-1998.
+	\bibitem{li05}
+		Li, Hao, Randy Ewoldt, and Michael G. Olsen. "Turbulent and transitional velocity measurements in a rectangular microchannel using microscopic particle image velocimetry." \textit{Experimental Thermal and Fluid Science} 29.4 (2005): 435-446.
+\end{thebibliography}
+\bibliographystyle{plain}
+
+\end{document}

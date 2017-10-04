@@ -1,0 +1,397 @@
+\documentclass{article} % A4 paper and 11pt font size
+\usepackage[export]{adjustbox}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage[italian]{babel}
+\usepackage{booktabs}
+\usepackage[font={small}, justification=centering]{caption}
+\usepackage{cleveref}
+\usepackage{epstopdf}
+\usepackage[cm]{fullpage}
+\usepackage{gensymb}
+\usepackage{graphicx}
+\usepackage[utf8]{inputenc}
+\usepackage{nicefrac}
+\usepackage{setspace}
+%\usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{systeme}
+
+\graphicspath{{./images/}}
+\onehalfspacing
+\newcommand{\back}{$\!\!\!\!$}
+
+\author{Fabio Alfano, Luca Candela,\\Stefano Gambuzza, Matteo Hakimi}
+\title{Signal Analysis}
+\date{}
+
+\begin{document}
+\maketitle
+%\begin{figure}[hb!]
+%	\centering
+%\includegraphics[scale=0.6]{logosapienza}
+%\end{figure}
+
+\clearpage
+\tableofcontents
+\clearpage
+
+\section{Introduzione}
+Lo scopo di questo lavoro è quello di comprendere i principali strumenti per l'analisi di segnali, come il calcolo dei momenti statistici ed il loro significato, il calcolo della trasformata di Fourier e il suo utilizzo per il filtraggio del rumore, il calcolo della densità spettrale di potenza, dell'autocorrelazione e della correlazione incrociata, oltre all'approssimazione della funzione densità di probabilità. I segnali che saranno manipolati sono cinque, ognuno composto da 10000 campioni ed acquisiti a 1000 Hz. Tutti i calcoli saranno effettuati in ambiente MATLAB.\par
+\section{Rumore bianco}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\textwidth]{rumore_bianco_andamento}
+	\caption{Andamento $x(t)$ del segnale nel tempo}
+\end{figure}
+Il primo segnale ad essere studiato è il segnale di rumore bianco, contenuto nel file \texttt{dati2.dat}. Sono attesi come valori di riferimento un valor medio prossimo a zero, così come una \textit{skewness} relativamente bassa, data la natura aleatoria del rumore. Per quanto riguarda invece lo spettro in frequenza del segnale, ci si aspetta un valore relativamente costante su tutte le frequenze, ed una densità di probabilità circa gaussiana.\par
+I primi quattro momenti statistici sono risultati essere:
+$$\bar{X} = 1.314\cdot10^{-3} \qquad \sigma_{x} = 0.4999 \qquad S_{x} = -3.8358\cdot10^{-2} \qquad K_{x} = 2.9245$$
+in cui $\bar{X}, \sigma_{X}, S_{X}, K_{X}$ sono, rispettivamente, valor medio, deviazione standard, skewness e flatness del segnale.\par
+In accordo con quanto previsto, il valor medio e la skewness sono ridotti, la deviazione standard è elevata e la flatness è vicina a $K_{G} = 3$, valore di riferimento per una distribuzione gaussiana. A ulteriore conferma, si può calcolare la densità di probabilità del segnale in esame e confrontarla con una gaussiana avente lo stesso valor medio e la stessa deviazione standard: si nota come entrambe procedano in maniera simile, confermando quindi come il rumore bianco sia un fenomeno dal comportamento gaussiano.\par
+Il segnale presenta inoltre una bassa autocorrelazione, come atteso per un rumore aleatorio: il coefficiente si mantiene sempre sotto il valore di 0.05, tranne che in $\tau = 0$ in cui, per definizione, il valore del coefficiente è unitario, e per $\tau \to 10$ dove l'algoritmo per il calcolo di $\rho_x$ introduce notevoli errori. Per quanto riguarda lo spettro del segnale, si nota come atteso un valore quasi costante su tutte le frequenze, il che giustifica la definizione di rumore \textit{bianco}.
+\begin{figure}[ht!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{rumore_bianco_pdf}
+		\caption{Densità di probabilità del segnale, confrontato con una probabilità gaussiana}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{rumore_bianco_autocorr}
+		\caption{Coefficiente di autocorrelazione $\rho_{\tau}$ del segnale nel tempo $\tau$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{rumore_bianco_fourier_lin}
+		\caption{Modulo della trasformata di Fourier del segnale}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\columnwidth]{rumore_bianco_fourier_log}
+		\caption{Densità spettrale di potenza del segnale}
+	\end{subfigure}
+\end{figure}
+\newpage
+\section{Segnale armonico}
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\textwidth, center]{sinusoidale_andamento}
+	\caption{Andamento $x(t)$ del segnale armonico nel tempo}
+\end{figure}
+Il file \texttt{dati4.dat} contiene un segnale armonico. Osservando il comportamento del segnale, è atteso un valor medio prossimo allo zero così come la skewness, ed una frequenza di circa 1.6 Hz (dati i 32 zeri del segnale in 10 secondi).\par
+Per questo segnale si ha:
+$$ \bar{X} = -8.6519\cdot10^{-5} \qquad \sigma_{x} = 0.7101 \qquad S_{x} = 1.8427\cdot10^{-4} \qquad K_{x} = 1.4968 $$\par
+Come atteso, il valore medio e la skewness sono prossimi a zero, e differiscono dai valori ideali solo per il numero non intero di periodi presente nell'intervallo di tempo. Inoltre, dato che il segnale ha un valor medio trascurabile, la deviazione standard sarà circa pari alla media quadratica (in inglese, \textit{root mean square}) del segnale stesso, idealmente pari a $\nicefrac{\sqrt{2}}{2}$ per un segnale armonico con ampiezza unitaria. Come controllo aggiuntivo, è stata calcolata la media quadratica del segnale, che risulta essere pari a $X_{RMS} = 0.7100$, simile sia al valore teorico che al valore calcolato di $\sigma_{x}$\par
+La frequenza del segnale si può determinare mediante la trasformata di Fourier, e l'andamento dello spettro del segnale può essere confrontato con quello ideale di un segnale armonico, ovvero un delta di Dirac centrato nella frequenza propria della sinusoide.
+\begin{figure}[ht!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{sinusoidale_fourier_lin}
+		\caption{Trasformata di Fourier del segnale}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{sinusoidale_fourier_lin_zoom}
+		\caption{Trasformata di Fourier del segnale, dettaglio sulle basse frequenze}
+	\end{subfigure}
+\end{figure}\par
+La trasformata di Fourier del segnale è, come atteso per un segnale reale, simmetrica rispetto all'asse verticale, e presenta un picco in corrispondenza di $f = 1.7$ Hz, valore prossimo a quello supposto di $f = 1.6$ Hz, a cui si sovrappone un contributo ridotto su tutte le frequenze. Questo contributo ridotto, come si può osservare dal dettaglio a basse frequenze, è dato dall'algoritmo \texttt{fft} utilizzato, e non da rumore presente nel segnale. Infatti, l'algoritmo opera rendendo periodico il segnale; questo comporta, per il segnale analizzato, una discontinuità ogni 10 s, che si traduce in Fourier in un contributo su tutte le frequenze. A conferma di quanto detto, si vedrà nella sezione \textit{windowing} come questo contributo potrà essere azzerato.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{sinusoidale_autocorr}
+		\caption{Coefficiente di autocorrelazione $\rho_x(\tau)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{sinusoidale_fourier_log}
+		\caption{Densità spettrale di potenza, grafico doppio-logaritmico}
+	\end{subfigure}
+\end{figure}\par
+Il coefficiente di autocorrelazione, come atteso per un segnale armonico, si comporta come un coseno avente la stessa frequenza. Il coefficiente, per  $\tau \to 10$, assume valori fuori dall'intervallo $[-1; 1]$, ma questo è dovuto, come per il segnale precedente, a un difetto dell'algoritmo utilizzato per il calcolo di $\rho_x$, e non ad un effettivo comportamento del coefficiente.\par
+Per quanto riguarda la densità spettrale di potenza, si ha come atteso un valore massimo per $f = 1.7$ Hz che decresce allontanandosi  da questa frequenza, a fronte di un teorico impulso di Dirac.
+\newpage
+\section{Segnale armonico rumoroso}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\textwidth, center]{rumore_sin_andamento}
+	\caption{Andamento temporale del segnale $x(t)$}
+\end{figure}
+Il terzo set, contenuto nel file \texttt{dati5.dat}, consiste in un segnale armonico a cui è stato aggiunto rumore. Anche per questo segnale sono stati calcolati i valori statistici più importanti:
+$$ \bar{X} = 1.2273\cdot10^{-3} \qquad \sigma_{x} = 0.8652 \qquad S_{x} = -7.2052\cdot10^{-3} \qquad K_{x} =  2.3251 $$\par
+Si può osservare come siano ancora ridotti il valore medio e la \textit{skewness} (dato che sono stati sommati due segnali in cui questi momenti sono bassi), mentre risulta più elevata (rispetto al caso senza rumore) la deviazione standard, così come la \textit{flatness}, che si è avvicinata al valore $K_x = 3$ di un segnale puramente gaussiano.\par
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_sin_fourier_lin}
+		\caption{Trasformata di Fourier del segnale $X(f)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_sin_fourier_lin_zoom}
+		\caption{Trasformata di Fourier del segnale, dettaglio sulle basse frequenze}
+	\end{subfigure}
+\end{figure}\par
+Trasformando in Fourier il segnale, si apprezza in maniera migliore la natura sinusoidale del campione: si osserva un picco molto elevato ad una determinata frequenza ed una ridotta \textit{baseline} dovuta solamente al rumore. Si può cercare di tornare ad un andamento simile a quello originale rimuovendo il rumore con l'applicazione di un filtro passa-basso o di un passa-banda.\par
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_sin_filt_1}
+		\caption{Segnale filtrato con un passa-basso a 15 Hz}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_sin_filt_2}
+		\caption{Segnale filtrato con un passa-banda tra 1 Hz e 5 Hz}
+	\end{subfigure}
+\end{figure}\par
+Si può osservare che l'utilizzo di un passa-banda risulta in un segnale molto simile a quello di partenza, mentre quello ricavato da un passa-basso presenta ancora alcune componenti di rumore. La causa non risiede nella natura del filtro, ma piuttosto nella ridotta finestra di frequenze utilizzata per il passa-banda. La differenza tra il segnale filtrato e quello originale è data principalmente dai contributi del rumore sulle frequenze del segnale originale, che non possono essere filtrati senza rimuovere informazioni sul segnale stesso.\par
+In questo caso, sapendo di partire da un segnale a frequenza iniziale $f = 1.7$ Hz, si sarebbe potuto anche procedere utilizzando un passa-banda operante nell'intervallo $f \in [1.6, 1.8]$ Hz, procedura che non è mai applicabile in casi reali, dato che raramente si conosce l'andamento del segnale originale.\par
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_sin_autocorr}
+		\caption{Coefficiente di autocorrelazione del segnale $\rho_{x}(\tau)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_sin_fourier_log}
+		\caption{Densità spettrale di potenza del segnale in grafico doppio-logaritmico}
+	\end{subfigure}
+\end{figure}\par
+Anche dall'analisi dell'autocorrelazione si possono notare somiglianze con il segnale armonico \textit{pulito}, dato un andamento simile ad un coseno (ma a valori più bassi di quelli del segnale senza rumore), ed ancora una volta un picco della densità spettrale di potenza in corrispondenza della frequenza del segnale, ma con valori diversi da zero in generale, dovuti al fatto che parte della potenza del segnale è spesa per trasmettere le componenti di rumore.
+\newpage
+\section{Segnale fluidodinamico}
+Il segnale contenuto nel file \texttt{dati1.dat} è un segnale fluidodinamico, come può esserlo quello registrato da un anemometro in scia di un corpo tozzo.\par
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\textwidth, center]{fluidodin_andamento}
+	\caption{Andamento del segnale $x(t)$ nel tempo}
+\end{figure}
+In questo caso, il calcolo dei momenti statistici restituisce:
+$$ \bar{X} = 0.2214 \qquad \sigma_{x} = 0.8894 \qquad S_{x} = -0.5538 \qquad K_{x} =  3.2012 $$\par
+Si osserva un ridotto valore medio, combinato con un elevato valore della deviazione standard ed una \textit{flatness} prossima a 3. Si può concludere che il segnale rappresenta l'andamento temporale di un flusso turbolento.\par
+Da una osservazione dell'andamento del segnale si può apprezzare come non siano presenti contributi di rumore; ci si aspetta quindi una trasformata di Fourier limitata ad una ristretta banda di frequenze.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{fluidodin_fourier_lin}
+		\caption{Trasformata di Fourier del segnale $X(f)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{fluidodin_fourier_lin_zoom}
+		\caption{Trasformata di Fourier del segnale, dettaglio sulle basse frequenze}
+	\end{subfigure}
+\end{figure}\par
+Questa assunzione è confermata dall'analisi dello spettro in frequenza del segnale, limitato a valori di frequenza compresi tra -20 Hz e 20 Hz. Non sono presenti contributi di rumore da rimuovere, e pertanto non è necessario filtrare il segnale.\par
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{fluidodin_autocorr}
+		\caption{Coefficiente di autocorrelazione del segnale $\rho_{x}(\tau)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{fluidodin_autocorr_taylor}
+		\caption{$\rho_{x}(\tau)$ \textit{vs} $\tau^2$}
+	\end{subfigure}
+\end{figure}\par
+Dal coefficiente di autocorrelazione nel tempo si possono ricavare importanti risultati per quanto riguarda le scale temporali del campo fluidodinamico.\par
+Si può ottenere la scala temporale integrale semplicemente integrando il coefficiente di autocorrelazione tra $\tau = 0$ e (teoricamente) $\tau \to \infty$. In maniera più pratica, si può calcolare la scala integrale limitando l'intervallo di integrazione al primo valore per cui $\rho_{x}(\tau) = 0$, che in questo caso corrisponde a $\tau = 0.454$ s. Si ottiene quindi un valore della \textit{timescale} integrale di $\tau_I = 122.01$ ms.\par
+La determinazione della scala temporale di Taylor (intermedia tra la scala integrale e quella di Kolmogorov) è solitamente complicata da ottenere: sfruttando la proprietà di $\rho_{x}(\tau)$ di comportarsi come una parabola per $\tau \to 0$, si dovrebbe trovare quella che meglio approssima l'autocorrelazione per valori bassi di $\tau$ ed individuarne l'intersezione con l'asse del ritardo. Un metodo più semplice consiste nel plottare l'andamento di $\rho_x(\tau)$ in funzione di $\tau^2$: in questo grafico $\rho_x(\tau)$ assume un andamento lineare per $\tau \to 0$, e la parabola diventa la retta tangente in $\tau = 0$. Con questo metodo si ricava che la scala di Taylor per questo segnale è $\tau_\lambda \approx 66$ ms.
+\newpage
+\section{Segnale fluidodinamico rumoroso}
+L'ultimo segnale analizzato sarà quello contenuto nel file \texttt{dati3.dat}, ovvero il segnale ottenuto dall'addizione di rumore bianco al segnale fluidodinamico analizzato in precedenza.\par
+\begin{figure}[ht!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{rumore_fluid_andamento}
+	\caption{Andamento del segnale $x(t)$ nel tempo}
+\end{figure}
+Per questo segnale si ha:
+$$ \bar{X} = 0.2227 \qquad \sigma_{x} = 1.0239 \qquad S_{x} = -0.3766 \qquad K_{x} =  3.1621 $$\par
+Come per il segnale armonico rumoroso, si può osservare come siano rimasti quasi immutati i valori di $\bar{X}$ e di $S_{x}$, mentre è leggermente aumentata la deviazione standard del segnale. Anche la \textit{flatness} del segnale ha subito una modifica, portandosi ad un valore più prossimo a 3. Si può concludere quindi che l'aggiunta di rumore solitamente non modifica il valore medio e la \textit{skewness} dei segnali, quanto la deviazione standard che aumenta (in maniera empirica, un segnale registrato con un notevole rumore sarà affetto da errore considerevole, e di questo fenomeno ne tiene conto proprio l'elevata $\sigma_x$) e la \textit{flatness} (che si avvicina al valore di riferimento 3 per un segnale gaussiano).
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_fluid_fourier_lin}
+		\caption{Trasformata di Fourier del segnale $X(f)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_fluid_fourier_lin_zoom}
+		\caption{Trasformata di Fourier del segnale, dettaglio sulle basse frequenze}
+	\end{subfigure}
+\end{figure}\par
+Dall'andamento dello spettro del segnale si può osservare come sia presente la caratteristica \textit{baseline} a tutte le frequenze del rumore bianco, oltre ad un andamento estremamente simile a quello del segnale precedente. Anche in questo caso si può operare per filtrare il rumore e tornare al segnale originale.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_fluid_filt_1}
+		\caption{Segnale filtrato con passa-basso a 50 Hz}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_fluid_filt_2}
+		\caption{Segnale filtrato con passa-basso a 13.5 Hz}
+	\end{subfigure}
+\end{figure}\par
+In questo caso risulta molto efficace un singolo passa-basso, per filtrare tutte le frequenze superiori a 13.5 Hz. Il segnale ottenuto in questo modo è estremamente simile a quello non affetto da rumore, e può essere utilizzato per calcolare le scale temporali della turbolenza senza commettere errori significativi. Utilizzando invece un passa-basso a 50 Hz non si riesce a filtrare efficacemente tutto il rumore, ed il segnale rimane "sporcato".\par
+L'utilizzo, invece, del segnale rumoroso per il calcolo delle caratteristiche turbolente del flusso restituisce valori che, confrontati con l'analisi del segnale "pulito", risultano errati.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_fluid_autocorr}
+		\caption{Coefficiente di autocorrelazione del segnale $\rho_{x}(\tau)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{rumore_fluid_autocorr_taylor}
+		\caption{$\rho_{x}(\tau)$ \textit{vs} $\tau^2$}
+	\end{subfigure}
+\end{figure}\par
+La scala integrale calcolata con il segnale non filtrato risulta essere $\tau_I = 91.27$ ms, a fronte del valore reale di $\tau_I = 120.01$ ms, ed è quindi affetto in maniera significativa da errore. Per quanto riguarda il calcolo della scala di Taylor si hanno maggiori difficoltà a individuare un valore, dato che l'autocorrelazione presenta un valore unitario in $\tau = 0$, per poi saltare a valori minori e procedere con continuità. Utilizzando quindi i primi valori (escluso il primo) per la determinazione della parabola interpolatrice, si ottiene un'intersezione per $\tau^2 \approx 3600$ ms$^2$, e quindi un $\tau_{\lambda} \approx 60$ ms, a fronte del valore reale di $\tau_{\lambda} \approx 66$ ms. Il valore della scala di Taylor risulta quindi meno affetto dal rumore.
+
+\section{Cross-correlazioni}
+Per verificare quanto due segnali siano simili si può ricorrere all'operazione di cross-correlazione. In questo paragrafo saranno considerate le correlazioni incrociate tra tutti i segnali analizzati. Anche in questo caso l'algoritmo utilizzato introduce errore che aumenta sensibilmente il valore del coefficiente per $\tau \to 10$ s.
+
+\paragraph{Armonico pulito e rumore bianco}\back(\cref{fig:xcorr_sin_noise})\par
+La prima analisi che sarà effettuata è la cross-correlazione tra il segnale armonico e il segnale di rumore. Si osserva come il coefficiente di cross-correlazione si mantiene sempre ridotto (i due segnali non sono simili) ma presenta una periodicità dovuta a quella del segnale armonico. L'aumento progressivo del valore di $\rho_{x,\ y}(\tau)$ è dato dalla diminuzione del termine $(N - j)$ al denominatore di $\rho$.
+
+\paragraph{Armonico pulito e armonico con rumore}\back(\cref{fig:xcorr_sin_noisesin})\par
+La correlazione incrociata tra il segnale armonico pulito e quello affetto da rumore, invece, presenta valori molto più alti (ma minori di 1, dato che il rumore crea una differenza tra i due segnali), e anche in questo caso si presenta con periodicità importante. Inoltre si nota come l'andamento sia simile a quello di un coseno con fase nulla, ad indicare come i due segnali siano (a parte il contributo di rumore) esattamente in fase.
+
+\paragraph{Armonico pulito e fluidodinamico pulito}\back(\cref{fig:xcorr_sin_fluid})\par
+Si può osservare come la correlazione incrociata tra il segnale armonico e quello fluidodinamico presenti ancora una volta una componente marcata di oscillazioni a basso periodo, che provengono dal segnale armonico, e una componente di minore ampiezza a frequenza più elevata. Questo fenomeno si può osservare in maniera più semplice dallo spettro in frequenza $P_{x, y}(f)$: è presente la componente a $f = 1.7$ Hz, dal segnale armonico, ed una componente distribuita per $|f| < 10$ Hz.
+
+\paragraph{Armonico pulito e fluidodinamico con rumore}\back(\cref{fig:xcorr_sin_fluidnoise})\par
+Stesse considerazioni si possono fare per la correlazione incrociata del segnale armonico pulito con il segnale fluidodinamico con rumore: componenti a bassa frequenza date dal segnale armonico, a media frequenza date dal segnale fluidodinamico e componenti (molto ridotte, date le proprietà di filtraggio della cross-correlazione) a più elevata frequenza date dal rumore.
+
+\paragraph{Armonico con rumore e fluidodinamico pulito}\back(\cref{fig:xcorr_fluid_sinnoise})\par
+Ancora una volta si possono osservare, per la cross-correlazione tra armonico rumoroso e fluidodinamico pulito, componenti a bassa frequenza dal segnale armonico, media frequenza dal fluidodinamico ed alta frequenza e bassa intensità dal rumore.
+
+\paragraph{Rumore bianco e fluidodinamico pulito}\back(\cref{fig:xcorr_fluid_noise})\par
+Dal confronto tra il fluidodinamico pulito e il rumore bianco, invece, si notano solo componenti ad alta frequenza date dal rumore, mentre il coefficiente si mantiene costantemente ridotto, sintomo che il segnale fluidodinamico pulito presenta una regolarità assente nel segnale di rumore.
+
+\paragraph{Fluidodinamico pulito e fluidodinamico con rumore}\back(\cref{fig:xcorr_fluid_fluidnoise})\par
+L'andamento della cross-correlazione tra i due segnali fluidodinamici ha ovviamente un andamento simile a quello dell'autocorrelazione del fluidodinamico, assumendo valori ovviamente minori.
+
+\paragraph{Rumore bianco e fluidodinamico con rumore}\back(\cref{fig:xcorr_fluidnoise_noise})\par
+Per quanto riguarda la cross-correlazione tra rumore bianco e fluidodinamico con rumore, il comportamento del coefficiente di correlazione incrociata è dominato dalle componenti ad alta frequenza del rumore presente in entrambi i segnali.
+
+\paragraph{Armonico con rumore e fluidodinamico con rumore}\back(\cref{fig:xcorr_fluidnoise_sinnoise})\par
+Ancora una volta, si vede come le componenti di rumore presenti in entrambi i segnali correlati introducano notevoli oscillazioni a frequenza elevata. L'andamento complessivo risulta quindi simile a quello relativo ai segnali puliti, ma affetto da notevole rumore.
+
+
+
+\begin{figure}[h!]
+	\begin{minipage}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sin_noise}
+		\caption{Cross-correlazione tra armonico pulito e rumore bianco}
+		\label{fig:xcorr_sin_noise}
+	\end{minipage}
+	\begin{minipage}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sin_noisesin}
+		\caption{Cross-correlazione tra armonico pulito e armonico con rumore}
+		\label{fig:xcorr_sin_noisesin}
+	\end{minipage}
+\end{figure}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sin_fluid}
+		\caption{$\rho_{x,\ y}(\tau)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sin_fluid_fourier}
+		\caption{$P_{x,\ y}(f)$}
+	\end{subfigure}
+	\caption{Cross-correlazione tra armonico pulito e fluidodinamico pulito}
+	\label{fig:xcorr_sin_fluid}
+\end{figure}
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sin_fluidnoise}
+		\caption{$\rho_{x,\ y}(\tau)$}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sin_fluidnoise_fourier}
+		\caption{$P_{x,\ y}(f)$}
+	\end{subfigure}
+	\caption{Cross-correlazione tra armonico pulito e fluidodinamico con rumore}
+	\label{fig:xcorr_sin_fluidnoise}
+\end{figure}
+\begin{figure}[h!]
+	\begin{minipage}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_fluid_sinnoise}
+		\caption{Cross-correlazione tra fluidodinamico pulito e armonico con rumore}
+		\label{fig:xcorr_fluid_sinnoise}
+	\end{minipage}
+	\begin{minipage}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_fluid_noise}
+		\caption{Cross-correlazione tra rumore bianco e fluidodinamico}
+		\label{fig:xcorr_fluid_noise}
+	\end{minipage}
+\end{figure}
+\begin{figure}[h!]
+	\begin{minipage}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_fluid_fluidnoise}
+		\caption{Cross-correlazione tra fluidodinamico pulito e fluidodinamico con rumore}
+		\label{fig:xcorr_fluid_fluidnoise}
+	\end{minipage}
+	\begin{minipage}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_fluidnoise_noise}
+		\caption{Cross-correlazione tra fluidodinamico con rumore e rumore bianco}
+		\label{fig:xcorr_fluidnoise_noise}
+	\end{minipage}
+\end{figure}
+\begin{figure}[h!]
+	\begin{minipage}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_sinnoise_noise}
+		\caption{Cross-correlazione tra rumore bianco e armonico con rumore}
+		\label{fig:xcorr_sinnoise_noise}
+	\end{minipage}
+	\begin{minipage}[t]{0.5\textwidth}
+		\includegraphics[width=\linewidth]{xcorr_fluidnoise_sinnoise}
+		\caption{Cross-correlazione tra fluidodinamico con rumore e armonico con rumore}
+		\label{fig:xcorr_fluidnoise_sinnoise}
+	\end{minipage}
+\end{figure}
+\clearpage
+\section{Windowing dei segnali}
+Il windowing è un procedimento effettuato allo scopo di migliorare le caratteristiche della trasformata di un segnale moltiplicandolo per una funzione di finestra direttamente nel dominio del tempo.\par
+Il segnale armonico che è stato analizzato si sviluppa nel tempo per un numero non intero di periodi: per questo motivo se ripetuto risulta discontinuo, e la presenza di questa discontinuità ha effetti sullo spettro del segnale. In generale, il procedimento di windowing  porta a zero il segnale agli estremi, in modo da far scomparire la discontinuità.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_hamm_hann_sin}
+		\caption{Andamento temporale dei segnali con \textit{windowing}}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_hamm_hann_sin_fourier}
+		\caption{Andamento in frequenza dei segnali con \textit{windowing}}
+	\end{subfigure}
+\end{figure}\par
+Dall'andamento in frequenza dei segnali con \textit{window} si può subito osservare l'efficacia del procedimento: i valori della trasformata dei segnali con windowing si avvicinano notevolmente a quelli di un delta di Dirac, ovvero elevati alla frequenza propria del segnale e nulli per frequenze diverse. Si nota anche un minore valore massimo della trasformata stessa dato dalla riduzione globale dell'energia del segnale (la finestra che moltiplica il segnale iniziale ha valori sempre compresi tra 0 ed 1). Le finestre utilizzate in questo caso (di hamming ed hanning) risultano essere quindi sufficientemente efficaci.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_flat_bart_sin}
+		\caption{Andamento temporale dei segnali con \textit{windowing}}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_flat_bart_sin_fourier}
+		\caption{Andamento in frequenza dei segnali con \textit{windowing}}
+	\end{subfigure}
+\end{figure}\par
+Ovviamente, differenti finestre risultano in differenti comportamenti in frequenza: si può osservare come una finestra Flat Top risulti in un andamento più regolare della trasformata, ma a banda maggiore, ed anche una finestra Bartlett produce alcune imprecisioni lontano dalla fondamentale. In tutti i casi, risultando il segnale continuo, si eliminano le componenti a frequenze lontane dello spettro.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_hamm_hann_sinnoise}
+		\caption{Andamento temporale dei segnali con \textit{windowing}}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_hamm_hann_sinnoise_fourier}
+		\caption{Andamento in frequenza dei segnali con \textit{windowing}}
+	\end{subfigure}
+\end{figure}\par
+Il windowing migliora le condizioni del segnale anche nel caso di rumore: sono presenti componenti dello spettro a frequenze diverse dalla fondamentale, ma la potenza trasmessa attraverso queste frequenze risulta minore di quella del segnale non trattato (ancora una volta, perché la finestra diminuisce l'energia del segnale moltiplicandolo per un valore sempre minore dell'unità).
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_hamm_flat_fluid}
+		\caption{Andamento temporale dei segnali con \textit{windowing}}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{window_hamm_flat_fluid_fourier}
+		\caption{Andamento in frequenza dei segnali con \textit{windowing}}
+	\end{subfigure}
+\end{figure}\par
+Nel caso di segnale fluidodinamico i risultati sono notevolmente diversi, pur essendo ancora lo spettro a banda ridotta e concentrato in un intervallo di basse-medie frequenze. Si nota come il picco di frequenze del segnale originale venga perso sia utilizzando la finestra di Hamming (risultata la migliore per un segnale armonico) sia utilizzando la Flat Top, nonostante i due spettri dei segnali processati presentino andamenti simili con picchi registrati alle stesse frequenze.
+\newpage
+\section{Zero-Padding}
+Lo \textit{zero-padding} è un procedimento con il quale, aggiungendo zeri in coda al segnale da processare, si cerca di migliorare la risoluzione in frequenza dello spettro del segnale stesso. Alcune volte lo zero-padding è operato direttamente dall'algoritmo \texttt{FFT}, dato che risulta essere più veloce se il segnale è costituito da un numero di campioni esprimibile in potenza intera di due.
+\begin{figure}[h!]
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{zeropadding_sin_no_win}
+		\caption{Spettro del segnale armonico con zero-padding}
+	\end{subfigure}
+	\begin{subfigure}{0.5\textwidth}
+		\includegraphics[width=\linewidth]{zeropadding_sin_window}
+		\caption{Spettro del segnale armonico con zero-padding e windowing}
+	\end{subfigure}
+\end{figure}\par
+L'effetto dello zero-padding è chiaro: riprendendo il segnale armonico già analizzato, di cui si era determinata una frequenza di 1.7 Hz, si passa ad una frequenza di 1.65 Hz con uno zero-padding di 10000 punti (portando il numero di campioni totali a 20000), ad una di 1.675 Hz per 40000 campioni ed infine ad una di 1.6625 Hz per 80000 campioni. È lecito pensare che aumentando ulteriormente il numero di campioni il picco dello spettro continuerà ad oscillare intorno alla frequenza effettiva del segnale, con oscillazioni sempre minori in ampiezza. La doppia discontinuità creata dallo zero-padding (il segnale originale comincia e termina a valori diversi da zero) causa, nello spettro, la formazione di side lobes simili a quelli prodotti dalla trasformata di un impulso rettangolare: questo comportamento è una caratteristica dell'algoritmo \texttt{FFT}, che può essere rimosso applicando una finestra (in questo caso di hamming) al segnale originale prima dello zero-padding, effettivamente rimuovendo i contributi a frequenze differenti dalla fondamentale.
+\end{document}
